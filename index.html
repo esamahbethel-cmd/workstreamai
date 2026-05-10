@@ -33,7 +33,7 @@
     .sidebar{width:280px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:10}
     .sidebar-header{padding:32px 24px}
     .sidebar-nav{padding:0 16px;display:flex;flex-direction:column;gap:6px}
-    .content-area{flex:1;padding:48px 64px;height:100vh;overflow-y:auto;overflow-x:hidden}
+    .content-area{flex:1;padding:32px 24px;height:100vh;overflow-y:auto;overflow-x:hidden}
     .page-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px}
     .outreach-grid{display:grid;grid-template-columns:1fr 2fr;gap:32px}
     .desktop-table{display:table;width:100%;border-collapse:collapse}
@@ -302,44 +302,101 @@
     }
 
     /* ═══ LEAD TABLE ═══ */
-    function LeadTable({leads,segments,onSelectLead,onUpdateStatus,onUpdateField,currentPage,setCurrentPage}){
+    function LeadTable({leads,segments,onSelectLead,onUpdateStatus,onUpdateField,currentPage,setCurrentPage,showSize}){
       const perPage=100;
       const start=(currentPage-1)*perPage;
       const page=leads.slice(start,start+perPage);
       const totalPages=Math.ceil(leads.length/perPage);
+      const tdStyle={padding:"10px 12px",verticalAlign:"middle"};
+      const thStyle={padding:"12px 12px",textAlign:"left",fontSize:11,whiteSpace:"nowrap"};
       return(
         <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,overflow:"hidden",display:"flex",flexDirection:"column"}}>
-          <table className="desktop-table"><thead><tr style={{borderBottom:"1px solid var(--border)",backgroundColor:"var(--surface)",color:"var(--muted)",fontSize:12,textTransform:"uppercase"}}>
-            <th style={{padding:"16px 24px",textAlign:"left"}}>Prospect</th><th style={{padding:"16px 24px",textAlign:"left"}}>Location</th><th style={{padding:"16px 24px",textAlign:"left"}}>Website</th><th style={{padding:"16px 24px",textAlign:"left"}}>LinkedIn</th><th style={{padding:"16px 24px",textAlign:"left"}}>Segment</th><th style={{padding:"16px 24px",textAlign:"left"}}>Size</th><th style={{padding:"16px 24px",textAlign:"left"}}>Status</th><th style={{padding:"16px 24px",textAlign:"right"}}>Actions</th>
-          </tr></thead><tbody>
-          {page.map((ld,i)=>{const seg=segments[ld.segment]||segments.general||{label:"Other",color:"#6366F1",icon:"📋"};const szInfo=SIZE_TIERS&&SIZE_TIERS[ld.size]?SIZE_TIERS[ld.size]:{label:ld.size||"SME",color:"#10B981",icon:"🏪"};return(
-            <tr key={ld.id||i} style={{borderBottom:"1px solid var(--border)",transition:"background .2s"}} onMouseEnter={e=>e.currentTarget.style.background="var(--surface)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-              <td style={{padding:"12px 24px"}}><div style={{fontWeight:700,fontSize:15}}>{ld.name}</div><div style={{color:"var(--muted)",fontSize:13,marginTop:2}}>{ld.title} @ <strong>{ld.company}</strong></div><div style={{marginTop:4}}><EditField value={ld.email} placeholder="Email" type="email" onSave={v=>onUpdateField(ld.id,"email",v)}/></div></td>
-              <td style={{padding:"12px 24px"}}><div style={{color:"var(--text)",fontSize:13}}>📍 {ld.location||"Global"}</div></td>
-              <td style={{padding:"12px 24px"}}><EditField value={ld.website} placeholder="Website URL" type="url" onSave={v=>onUpdateField(ld.id,"website",v)}/></td>
-              <td style={{padding:"12px 24px"}}><EditField value={ld.linkedin} placeholder="LinkedIn URL" type="url" onSave={v=>onUpdateField(ld.id,"linkedin",v)}/></td>
-              <td style={{padding:"12px 24px"}}><div className="status-badge" style={{background:seg.color+"15",color:seg.color,fontSize:10}}>{seg.icon} {seg.label}</div></td>
-              <td style={{padding:"12px 24px"}}><div className="status-badge" style={{background:szInfo.color+"15",color:szInfo.color,fontSize:10}}>{szInfo.icon} {szInfo.label}</div></td>
-              <td style={{padding:"12px 24px"}}><select value={ld.status} onChange={e=>onUpdateStatus(ld.id,e.target.value)} style={{padding:"6px 12px",background:ld.status==="New"?"var(--surface)":ld.status==="Contacted"?"rgba(16,185,129,.1)":ld.status==="Converted"?"rgba(245,158,11,.1)":"rgba(59,130,246,.1)",color:ld.status==="New"?"var(--muted)":ld.status==="Contacted"?"#10B981":ld.status==="Converted"?"#F59E0B":"#3B82F6",border:"1px solid var(--border)",borderRadius:8,outline:"none",fontSize:12,fontWeight:700,cursor:"pointer"}}><option value="New">New</option><option value="Contacted">Contacted ✓</option><option value="In Progress">In Progress ⏳</option><option value="Converted">Converted 💰</option><option value="Rejected">Rejected</option></select></td>
-              <td style={{padding:"12px 24px",textAlign:"right"}}><button className="btn-primary" style={{padding:"8px 16px",fontSize:12}} onClick={()=>onSelectLead(ld)}>Write Scripts</button></td>
-            </tr>)})}
-          </tbody></table>
+          <div style={{overflowX:"auto"}}>
+          <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
+            <colgroup>
+              <col style={{width:"22%"}}/>
+              <col style={{width:"13%"}}/>
+              <col style={{width:"18%"}}/>
+              <col style={{width:"15%"}}/>
+              {showSize&&<col style={{width:"10%"}}/>}
+              <col style={{width:"12%"}}/>
+              <col style={{width:"10%"}}/>
+            </colgroup>
+            <thead><tr style={{borderBottom:"1px solid var(--border)",backgroundColor:"var(--surface)",color:"var(--muted)",textTransform:"uppercase",letterSpacing:".04em"}}>
+              <th style={thStyle}>Prospect</th>
+              <th style={thStyle}>Location</th>
+              <th style={thStyle}>Links</th>
+              <th style={thStyle}>Segment</th>
+              {showSize&&<th style={thStyle}>Size</th>}
+              <th style={thStyle}>Status</th>
+              <th style={{...thStyle,textAlign:"right"}}>Action</th>
+            </tr></thead>
+            <tbody>
+            {page.map((ld,i)=>{
+              const seg=segments[ld.segment]||segments.general||{label:"Other",color:"#6366F1",icon:"📋"};
+              const szInfo=SIZE_TIERS&&SIZE_TIERS[ld.size]?SIZE_TIERS[ld.size]:{label:"SME",color:"#10B981",icon:"🏪"};
+              return(
+              <tr key={ld.id||i} style={{borderBottom:"1px solid var(--border)",transition:"background .2s"}} onMouseEnter={e=>e.currentTarget.style.background="var(--surface)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                {/* Prospect */}
+                <td style={tdStyle}>
+                  <div style={{fontWeight:700,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ld.name}</div>
+                  <div style={{color:"var(--muted)",fontSize:11,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ld.title}</div>
+                  <div style={{color:"var(--muted)",fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}><strong>{ld.company}</strong></div>
+                </td>
+                {/* Location */}
+                <td style={tdStyle}><div style={{color:"var(--muted)",fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>📍 {ld.location||"US"}</div></td>
+                {/* Links — Website + LinkedIn + Email stacked */}
+                <td style={tdStyle}>
+                  <div style={{display:"flex",flexDirection:"column",gap:3}}>
+                    <EditField value={ld.website} placeholder="Website" type="url" onSave={v=>onUpdateField(ld.id,"website",v)}/>
+                    <EditField value={ld.linkedin} placeholder="LinkedIn" type="url" onSave={v=>onUpdateField(ld.id,"linkedin",v)}/>
+                    <EditField value={ld.email} placeholder="Email" type="email" onSave={v=>onUpdateField(ld.id,"email",v)}/>
+                  </div>
+                </td>
+                {/* Segment */}
+                <td style={tdStyle}><div className="status-badge" style={{background:seg.color+"15",color:seg.color,fontSize:9,padding:"3px 8px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%",display:"block"}}>{seg.icon} {seg.label}</div></td>
+                {/* Size (clients only) */}
+                {showSize&&<td style={tdStyle}><div className="status-badge" style={{background:szInfo.color+"15",color:szInfo.color,fontSize:9,padding:"3px 8px"}}>{szInfo.icon} {szInfo.label}</div></td>}
+                {/* Status */}
+                <td style={tdStyle}>
+                  <select value={ld.status} onChange={e=>onUpdateStatus(ld.id,e.target.value)} style={{padding:"4px 6px",background:ld.status==="New"?"var(--surface)":ld.status==="Contacted"?"rgba(16,185,129,.1)":ld.status==="Converted"?"rgba(245,158,11,.1)":"rgba(59,130,246,.1)",color:ld.status==="New"?"var(--muted)":ld.status==="Contacted"?"#10B981":ld.status==="Converted"?"#F59E0B":"#3B82F6",border:"1px solid var(--border)",borderRadius:6,outline:"none",fontSize:11,fontWeight:700,cursor:"pointer",width:"100%"}}>
+                    <option value="New">New</option>
+                    <option value="Contacted">Contacted ✓</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Converted">Converted 💰</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </td>
+                {/* Action */}
+                <td style={{...tdStyle,textAlign:"right"}}>
+                  <button className="btn-primary" style={{padding:"6px 10px",fontSize:11,whiteSpace:"nowrap"}} onClick={()=>onSelectLead(ld)}>Scripts →</button>
+                </td>
+              </tr>);
+            })}
+            </tbody>
+          </table>
+          </div>
+          {/* Mobile cards */}
           <div className="mobile-cards">{page.map((ld,i)=>{const seg=segments[ld.segment]||segments.general||{label:"Other",color:"#6366F1",icon:"📋"};return(
             <div key={ld.id||i} className="mobile-card">
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}><div className="status-badge" style={{background:seg.color+"15",color:seg.color}}>{seg.icon} {seg.label}</div><select value={ld.status} onChange={e=>onUpdateStatus(ld.id,e.target.value)} style={{padding:"4px 8px",background:"var(--card)",color:"var(--muted)",border:"1px solid var(--border)",borderRadius:6,fontSize:11,fontWeight:700,cursor:"pointer"}}><option value="New">New</option><option value="Contacted">Contacted ✓</option><option value="In Progress">In Progress</option><option value="Converted">Converted 💰</option><option value="Rejected">Rejected</option></select></div>
-              <div style={{fontWeight:800,fontSize:18,marginBottom:4}}>{ld.name}</div>
-              <div style={{color:"var(--muted)",fontSize:14,marginBottom:4}}>{ld.title} @ <strong>{ld.company}</strong></div>
-              <div style={{color:"var(--muted)",fontSize:13,marginBottom:8}}>📍 {ld.location}</div>
-              <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:12}}>
-                <EditField value={ld.website} placeholder="Website URL" type="url" onSave={v=>onUpdateField(ld.id,"website",v)}/>
-                <EditField value={ld.linkedin} placeholder="LinkedIn URL" type="url" onSave={v=>onUpdateField(ld.id,"linkedin",v)}/>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+                <div className="status-badge" style={{background:seg.color+"15",color:seg.color,fontSize:10}}>{seg.icon} {seg.label}</div>
+                <select value={ld.status} onChange={e=>onUpdateStatus(ld.id,e.target.value)} style={{padding:"4px 8px",background:"var(--card)",color:"var(--muted)",border:"1px solid var(--border)",borderRadius:6,fontSize:11,fontWeight:700,cursor:"pointer"}}>
+                  <option value="New">New</option><option value="Contacted">Contacted ✓</option><option value="In Progress">In Progress</option><option value="Converted">Converted 💰</option><option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <div style={{fontWeight:800,fontSize:16,marginBottom:2}}>{ld.name}</div>
+              <div style={{color:"var(--muted)",fontSize:13,marginBottom:8}}>{ld.title} @ <strong>{ld.company}</strong></div>
+              <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:12}}>
+                <EditField value={ld.website} placeholder="Website" type="url" onSave={v=>onUpdateField(ld.id,"website",v)}/>
+                <EditField value={ld.linkedin} placeholder="LinkedIn" type="url" onSave={v=>onUpdateField(ld.id,"linkedin",v)}/>
                 <EditField value={ld.email} placeholder="Email" type="email" onSave={v=>onUpdateField(ld.id,"email",v)}/>
               </div>
-              <button className="btn-primary" style={{width:"100%",padding:"12px",fontSize:13}} onClick={()=>{onSelectLead(ld);window.scrollTo(0,0)}}>Write Scripts</button>
+              <button className="btn-primary" style={{width:"100%",padding:"10px",fontSize:13}} onClick={()=>{onSelectLead(ld);window.scrollTo(0,0)}}>Write Scripts</button>
             </div>)})}</div>
           <div className="pagination-bar">
-            <div style={{color:"var(--muted)",fontSize:13}}>Showing <strong style={{color:"var(--text)"}}>{start+1}</strong> to <strong style={{color:"var(--text)"}}>{Math.min(start+perPage,leads.length)}</strong> of <strong style={{color:"var(--text)"}}>{leads.length.toLocaleString()}</strong></div>
-            <div><button className="btn-secondary" style={{padding:"8px 16px"}} disabled={currentPage===1} onClick={()=>setCurrentPage(p=>p-1)}>Prev</button><span style={{fontSize:13,color:"var(--text)",fontWeight:700,padding:"0 12px"}}>{currentPage}/{totalPages||1}</span><button className="btn-secondary" style={{padding:"8px 16px"}} disabled={currentPage>=totalPages} onClick={()=>setCurrentPage(p=>p+1)}>Next</button></div>
+            <div style={{color:"var(--muted)",fontSize:13}}>Showing <strong style={{color:"var(--text)"}}>{start+1}</strong>–<strong style={{color:"var(--text)"}}>{Math.min(start+perPage,leads.length)}</strong> of <strong style={{color:"var(--text)"}}>{leads.length.toLocaleString()}</strong></div>
+            <div><button className="btn-secondary" style={{padding:"6px 14px"}} disabled={currentPage===1} onClick={()=>setCurrentPage(p=>p-1)}>← Prev</button><span style={{fontSize:13,color:"var(--text)",fontWeight:700,padding:"0 10px"}}>{currentPage}/{totalPages||1}</span><button className="btn-secondary" style={{padding:"6px 14px"}} disabled={currentPage>=totalPages} onClick={()=>setCurrentPage(p=>p+1)}>Next →</button></div>
           </div>
         </div>
       );
@@ -455,7 +512,7 @@
                     <select value={filterSeg} onChange={e=>{setFilterSeg(e.target.value);setClientPage(1)}} style={{padding:"12px 16px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,color:"var(--text)",outline:"none",fontSize:14}}><option value="all">All ({clientLeads.length})</option>{Object.entries(CLIENT_SEGMENTS).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}</select>
                   </div>
                 </div>
-                <LeadTable leads={filteredClients} segments={CLIENT_SEGMENTS} onSelectLead={ld=>{setActiveLead(ld);setActiveTrack("clients");setView("client-outreach")}} onUpdateStatus={(id,st)=>updateStatus(setClientLeads,id,st)} onUpdateField={(id,f,v)=>updateField(setClientLeads,id,f,v)} currentPage={clientPage} setCurrentPage={setClientPage}/>
+                <LeadTable leads={filteredClients} segments={CLIENT_SEGMENTS} showSize={true} onSelectLead={ld=>{setActiveLead(ld);setActiveTrack("clients");setView("client-outreach")}} onUpdateStatus={(id,st)=>updateStatus(setClientLeads,id,st)} onUpdateField={(id,f,v)=>updateField(setClientLeads,id,f,v)} currentPage={clientPage} setCurrentPage={setClientPage}/>
               </div>
             )}
 
@@ -472,7 +529,7 @@
                 </div>
                 {partnerLeads.length===0?(
                   <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:16,color:"var(--muted)",background:"var(--card)"}}><div style={{fontSize:48,marginBottom:16}}>🌍</div><h3 style={{margin:"0 0 8px"}}>No Brand Partners Loaded</h3><p style={{margin:0,maxWidth:400,marginLeft:"auto",marginRight:"auto"}}>Upload a CSV with your Brand Partners Dream 100 list (African banks, hotels, airlines, construction, tourism ministries).</p></div>
-                ):(<LeadTable leads={filteredPartners} segments={PARTNER_SEGMENTS} onSelectLead={ld=>{setActiveLead(ld);setActiveTrack("partners");setView("partner-outreach")}} onUpdateStatus={(id,st)=>updateStatus(setPartnerLeads,id,st)} onUpdateField={(id,f,v)=>updateField(setPartnerLeads,id,f,v)} currentPage={partnerPage} setCurrentPage={setPartnerPage}/>)}
+                ):(<LeadTable leads={filteredPartners} segments={PARTNER_SEGMENTS} showSize={false} onSelectLead={ld=>{setActiveLead(ld);setActiveTrack("partners");setView("partner-outreach")}} onUpdateStatus={(id,st)=>updateStatus(setPartnerLeads,id,st)} onUpdateField={(id,f,v)=>updateField(setPartnerLeads,id,f,v)} currentPage={partnerPage} setCurrentPage={setPartnerPage}/>)}
               </div>
             )}
 
