@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Workstream AI | Outreach Command Center</title>
+  <title>Workstream AI | Operating System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Outfit:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -12,580 +12,959 @@
   <script src="wai_clients_data.js"></script>
   <script src="wai_partners_data.js"></script>
   <style>
-    :root {
-      --bg: #05050A; --surface: #0A0D14; --card: #121622; --border: #1F2538;
-      --text: #F8FAFC; --muted: #94A3B8; --accent: #3B82F6;
-      --gradient: linear-gradient(135deg, #3B82F6, #8B5CF6);
-      --gradient2: linear-gradient(135deg, #F59E0B, #EF4444);
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0A0A0F;--surface:#111118;--card:#16161F;--border:#1E1E2E;
+      --text:#F0F0FF;--muted:#6B6B8A;--accent:#7C3AED;--accent2:#06B6D4;
+      --green:#10B981;--amber:#F59E0B;--red:#EF4444;--blue:#3B82F6;--pink:#EC4899;
+      --gradient:linear-gradient(135deg,#7C3AED,#06B6D4);
+      --gradient2:linear-gradient(135deg,#EC4899,#7C3AED);
+      --gradient3:linear-gradient(135deg,#10B981,#06B6D4);
     }
-    body { margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'Outfit','DM Sans',sans-serif;-webkit-font-smoothing:antialiased }
-    * { box-sizing:border-box }
-    ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1F2538;border-radius:4px}
-    button{font-family:inherit}button:disabled{opacity:.5;cursor:not-allowed}
-    .btn-primary{background:var(--gradient);color:white;border:none;padding:14px 28px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;transition:all .3s;box-shadow:0 4px 16px rgba(59,130,246,.2)}
-    .btn-primary:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(59,130,246,.4)}
-    .btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border);padding:14px 28px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;transition:all .2s}
-    .btn-secondary:not(:disabled):hover{background:var(--border)}
-    .status-badge{padding:4px 12px;border-radius:100px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;display:inline-block}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    .animate-up{animation:fadeIn .4s cubic-bezier(.16,1,.3,1) forwards}
-    .app-container{display:flex;min-height:100vh;background:var(--bg)}
-    .sidebar{width:280px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;z-index:10}
-    .sidebar-header{padding:32px 24px}
-    .sidebar-nav{padding:0 16px;display:flex;flex-direction:column;gap:6px}
-    .content-area{flex:1;padding:32px 24px;height:100vh;overflow-y:auto;overflow-x:hidden}
-    .page-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px}
-    .outreach-grid{display:grid;grid-template-columns:1fr 2fr;gap:32px}
-    .desktop-table{display:table;width:100%;border-collapse:collapse}
-    .mobile-cards{display:none}
-    .pagination-bar{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:var(--surface);border-top:1px solid var(--border)}
-    .nav-item{border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 16px;transition:all .2s;font-size:15px}
-    .nav-item:hover{background:rgba(255,255,255,.03)}
-    .nav-divider{height:1px;background:var(--border);margin:12px 0}
-    .tab-bar{display:flex;gap:4px;margin-bottom:20px;background:var(--surface);border-radius:12px;padding:4px;border:1px solid var(--border)}
-    .tab-btn{flex:1;padding:10px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;text-align:center}
-    @media(max-width:850px){
-      .app-container{flex-direction:column;height:100vh;overflow:hidden}
-      .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border);padding-bottom:8px}
-      .sidebar-header{padding:16px 20px;display:flex;align-items:center;gap:12px}
-      .sidebar-header>div:nth-child(1){margin-bottom:0!important;width:32px!important;height:32px!important;font-size:16px!important}
-      .sidebar-header>div:nth-child(3){display:none}
-      .sidebar-nav{flex-direction:row;padding:8px 16px;overflow-x:auto;scrollbar-width:none}
-      .sidebar-nav::-webkit-scrollbar{display:none}
-      .nav-item{white-space:nowrap;font-size:14px!important;padding:10px 16px!important}
-      .content-area{padding:24px 16px;height:auto;overflow-y:auto;padding-bottom:80px}
-      .page-header{flex-direction:column;align-items:flex-start;gap:16px;margin-bottom:24px}
-      .page-header h1{font-size:28px!important}
-      .outreach-grid{grid-template-columns:1fr;gap:24px}
-      .desktop-table{display:none}
-      .mobile-cards{display:flex;flex-direction:column;gap:16px;padding:16px;background:var(--surface)}
-      .mobile-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
-      .pagination-bar{flex-direction:column;gap:16px;text-align:center;padding:20px 16px}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+    .app{display:flex;height:100vh;overflow:hidden}
+    .sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+    .sidebar-brand{padding:20px 16px 12px;border-bottom:1px solid var(--border)}
+    .brand-logo{width:36px;height:36px;border-radius:10px;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;margin-bottom:10px}
+    .brand-name{font-size:14px;font-weight:800;font-family:'Outfit',sans-serif}
+    .brand-sub{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
+    .nav-section{padding:12px 8px 4px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--muted);transition:all .15s;margin:1px 8px}
+    .nav-item:hover{background:var(--card);color:var(--text)}
+    .nav-item.active{background:var(--card);color:var(--text);font-weight:700}
+    .nav-badge{margin-left:auto;font-size:10px;background:var(--border);padding:2px 7px;border-radius:100px;font-weight:700}
+    .nav-badge.hot{background:rgba(239,68,68,.2);color:var(--red)}
+    .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:28px 32px}
+    .page-title{font-size:28px;font-weight:800;font-family:'Outfit',sans-serif;margin-bottom:4px}
+    .page-sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
+    .card-sm{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+    .stat-card.green::before{background:var(--green)}
+    .stat-card.blue::before{background:var(--blue)}
+    .stat-card.amber::before{background:var(--amber)}
+    .stat-card.purple::before{background:var(--accent)}
+    .stat-card.red::before{background:var(--red)}
+    .stat-card.cyan::before{background:var(--accent2)}
+    .stat-card.pink::before{background:var(--pink)}
+    .stat-val{font-size:32px;font-weight:800;font-family:'Outfit',sans-serif;line-height:1}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+    .stat-sub{font-size:11px;color:var(--muted);margin-top:8px}
+    .btn{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;font-family:'DM Sans',sans-serif}
+    .btn-primary{background:var(--gradient);color:#fff;border-color:transparent}
+    .btn-secondary{background:transparent;color:var(--text);border-color:var(--border)}
+    .btn-secondary:hover{background:var(--surface);border-color:var(--muted)}
+    .btn-sm{padding:5px 10px;font-size:11px;border-radius:7px}
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700}
+    .tag{padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    .input{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%}
+    .input:focus{border-color:var(--accent)}
+    .select{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;cursor:pointer}
+    .table{width:100%;border-collapse:collapse;table-layout:fixed}
+    .table th{padding:10px 12px;text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap}
+    .table td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .table tr:last-child td{border-bottom:none}
+    .table tr:hover td{background:var(--surface)}
+    .divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+    .overdue{background:rgba(239,68,68,.06);border-left:3px solid var(--red)}
+    .score-bar{height:4px;border-radius:2px;background:var(--border);overflow:hidden;width:60px;display:inline-block}
+    .score-fill{height:100%;border-radius:2px;background:var(--gradient)}
+    .auth-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999}
+    .auth-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:40px;width:360px;text-align:center}
+    .logout-btn{position:fixed;top:12px;right:12px;z-index:100;padding:6px 14px;font-size:12px;background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.3);border-radius:8px;cursor:pointer;font-weight:700}
+    @media(max-width:900px){
+      .sidebar{width:180px;min-width:180px}
+      .content{padding:16px}
+      .grid-4{grid-template-columns:repeat(2,1fr)}
+      .grid-3{grid-template-columns:1fr 1fr}
     }
-
-    /* ═══ AUTH GATE STYLES ═══ */
-    #auth-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;font-family:'Outfit',sans-serif}
-    #auth-overlay.hidden{display:none}
-    .abox{width:100%;max-width:380px;padding:20px;animation:afIn .6s ease}
-    @keyframes afIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    .a-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,rgba(59,130,246,.15),rgba(139,92,246,.08));border:2px solid rgba(59,130,246,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px}
-    .a-tag{font-size:9px;font-weight:700;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;margin-bottom:6px;text-align:center}
-    .a-h1{font-size:22px;font-weight:800;color:var(--text);text-align:center;margin:0}
-    .a-sub{font-size:11px;color:var(--muted);margin-top:8px;text-align:center;line-height:1.5}
-    .a-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:24px;margin-top:24px;transition:border-color .3s}
-    .a-card.err{border-color:rgba(239,68,68,.4)}
-    .a-lbl{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px}
-    .a-iw{position:relative;margin-bottom:16px}
-    .a-inp{width:100%;padding:12px 44px 12px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:15px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:.15em;outline:none;box-sizing:border-box;transition:all .2s}
-    .a-inp:focus{border-color:rgba(59,130,246,.5)}
-    .a-inp:disabled{opacity:.5;background:rgba(239,68,68,.05)}
-    .a-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:4px}
-    .a-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:11px;color:#EF4444;font-weight:600;display:none}
-    .a-err.vis{display:block}
-    .a-lck{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:12px;margin-bottom:14px;text-align:center;display:none}
-    .a-lck.vis{display:block}
-    .a-lck-l{font-size:9px;font-weight:700;color:#EF4444;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
-    .a-lck-t{font-size:22px;font-weight:800;color:#EF4444;font-family:'JetBrains Mono',monospace}
-    .a-btn{width:100%;padding:13px 0;border-radius:8px;border:none;background:var(--gradient);color:#fff;font-size:13px;font-weight:700;letter-spacing:.04em;cursor:pointer;text-transform:uppercase;transition:all .2s;font-family:'Outfit',sans-serif}
-    .a-btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed}
-    .a-btn:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.3)}
-    .a-dots{display:flex;justify-content:center;gap:4px;margin-top:10px}
-    .a-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .3s}
-    .a-dot.x{background:#EF4444}
-    .a-ft{text-align:center;margin-top:18px;font-size:8px;color:#1F2538;letter-spacing:.08em}
-    .sb{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;background:var(--surface);border-bottom:1px solid var(--border);font-size:10px;font-family:'Outfit',sans-serif}
-    .sb.hidden{display:none}
-    .sb-l{display:flex;align-items:center;gap:8px}
-    .sb-d{width:6px;height:6px;border-radius:50%;background:#10B981;box-shadow:0 0 6px rgba(16,185,129,.4)}
-    .sb-n{color:var(--text);font-weight:700}
-    .sb-b{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(59,130,246,.1);color:var(--accent);border:1px solid rgba(59,130,246,.2);text-transform:uppercase;letter-spacing:.06em}
-    .sb-r{display:flex;align-items:center;gap:10px}
-    .sb-t{color:#1F2538}
-    .sb-x{padding:2px 8px;border-radius:4px;border:1px solid rgba(239,68,68,.2);background:rgba(239,68,68,.08);color:#EF4444;font-size:9px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;font-family:'Outfit',sans-serif}
-    #root{display:none}
-
+    @media(max-width:640px){
+      .sidebar{display:none}
+      .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
+<div id="root"></div>
+<script type="text/babel">
+const{useState,useEffect,useMemo,useCallback}=React;
 
-  <div id="auth-overlay"><div class="abox">
-    <div class="a-icon">🔒</div><div class="a-tag">WAI Outreach Engine</div>
-    <h1 class="a-h1">Authorized Access Only</h1>
-    <p class="a-sub">Enter your team access code to continue.</p>
-    <div class="a-card" id="acard">
-      <label class="a-lbl">Access Code</label>
-      <div class="a-iw"><input type="password" id="apin" class="a-inp" placeholder="Enter access code" autofocus><button class="a-eye" id="aeye" onclick="aTP()">◎</button></div>
-      <div class="a-err" id="aerr"></div>
-      <div class="a-lck" id="alck"><div class="a-lck-l">Account Locked</div><div class="a-lck-t" id="alkt">00:00</div></div>
-      <button class="a-btn" id="abtn" onclick="aSub()">Authenticate</button>
-      <div class="a-dots" id="adots"></div>
-    </div><div class="a-ft">WORKSTREAM AI · SECURED ACCESS</div>
-  </div></div>
-  <div class="sb hidden" id="sbar"><div class="sb-l"><div class="sb-d"></div><span style="color:var(--muted)">Logged in as <span class="sb-n" id="sname"></span></span><span class="sb-b hidden" id="sbadge">Admin</span></div><div class="sb-r"><span class="sb-t" id="stimer"></span><button class="sb-x" onclick="aOut()">Logout</button></div></div>
+/* ═══════════════════════════════════════════
+   CONSTANTS
+═══════════════════════════════════════════ */
+const AUTH_USERS=[
+  {name:"Bethel Esamah",pin:"WAI2026BE",role:"admin"},
+  {name:"Timothy Lopas",pin:"WAI2026TL",role:"team"},
+  {name:"Johanns Cordita",pin:"WAI2026JC",role:"team"},
+];
 
-  <div id="root"></div>
+const PIPELINE_STAGES={
+  not_contacted:{label:"Not Contacted",color:"#6B6B8A",icon:"○",score:0},
+  connection_sent:{label:"Connection Sent",color:"#3B82F6",icon:"→",score:0},
+  connected:{label:"Connected",color:"#06B6D4",icon:"✓",score:1},
+  message_sent:{label:"Message Sent",color:"#8B5CF6",icon:"✉",score:1},
+  replied:{label:"Replied",color:"#10B981",icon:"↩",score:2},
+  voice_note_sent:{label:"Voice Note Sent",color:"#F59E0B",icon:"🎙",score:2},
+  call_booked:{label:"Call Booked",color:"#EC4899",icon:"📅",score:5},
+  closed:{label:"Closed Won",color:"#10B981",icon:"💰",score:10},
+  not_interested:{label:"Not Interested",color:"#EF4444",icon:"✕",score:0},
+};
 
-  <script>
-  var AU={users:[{name:"Bethel Esamah",pin:"WAI2026BE",role:"admin"},{name:"Timothy Lopas",pin:"WAI2026TL",role:"team"},{name:"Johanns Cordita",pin:"WAI2026JC",role:"team"}],sm:480,ma:5,lm:15};
-  var aA=0,aLU=null,aLI=null,aSI=null,aSP=false;
-  function aInit(){try{var s=JSON.parse(sessionStorage.getItem("aia_s"));if(s&&s.exp>Date.now()){aShow(s);return}}catch(e){}try{var lk=JSON.parse(sessionStorage.getItem("aia_lk"));if(lk&&lk.until>Date.now()){aLU=lk.until;aA=lk.a;aStartLk()}}catch(e){}document.getElementById("apin").addEventListener("keydown",function(e){if(e.key==="Enter")aSub()})}
-  function aTP(){var i=document.getElementById("apin"),b=document.getElementById("aeye");aSP=!aSP;i.type=aSP?"text":"password";i.style.letterSpacing=aSP?"0.05em":"0.15em";b.textContent=aSP?"◉":"◎"}
-  function aSub(){if(aLU&&aLU>Date.now())return;var p=document.getElementById("apin").value.trim(),u=AU.users.find(function(x){return x.pin===p});if(u){var s={name:u.name,role:u.role,at:Date.now(),exp:Date.now()+AU.sm*60000};sessionStorage.setItem("aia_s",JSON.stringify(s));sessionStorage.removeItem("aia_lk");aShow(s)}else{aA++;if(aA>=AU.ma){aLU=Date.now()+AU.lm*60000;sessionStorage.setItem("aia_lk",JSON.stringify({until:aLU,a:aA}));aErr("Locked for "+AU.lm+" minutes.");aStartLk()}else{aErr("Invalid code. "+(AU.ma-aA)+" attempts left.");aDots()}document.getElementById("apin").value=""}}
-  function aErr(m){var e=document.getElementById("aerr");e.textContent="⚠ "+m;e.classList.add("vis");document.getElementById("acard").classList.add("err")}
-  function aDots(){var e=document.getElementById("adots");e.innerHTML=Array.from({length:AU.ma}).map(function(_,i){return'<div class="a-dot '+(i<aA?"x":"")+'"></div>'}).join("")}
-  function aStartLk(){var i=document.getElementById("apin");i.disabled=true;i.placeholder="Locked";document.getElementById("abtn").disabled=true;document.getElementById("alck").classList.add("vis");aLI=setInterval(function(){var r=Math.max(0,aLU-Date.now());if(r<=0){clearInterval(aLI);aLU=null;aA=0;sessionStorage.removeItem("aia_lk");i.disabled=false;i.placeholder="Enter access code";document.getElementById("abtn").disabled=false;document.getElementById("alck").classList.remove("vis");document.getElementById("adots").innerHTML="";document.getElementById("aerr").classList.remove("vis");document.getElementById("acard").classList.remove("err");return}var m=Math.ceil(r/60000),s=Math.ceil((r%60000)/1000);document.getElementById("alkt").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0")},1000)}
-  function aShow(s){document.getElementById("auth-overlay").classList.add("hidden");document.getElementById("root").style.display="block";document.getElementById("sbar").classList.remove("hidden");document.getElementById("sname").textContent=s.name;if(s.role==="admin")document.getElementById("sbadge").classList.remove("hidden");aUpT(s);aSI=setInterval(function(){aUpT(s)},30000)}
-  function aUpT(s){var r=Math.max(0,s.exp-Date.now());if(r<=0){aOut();return}document.getElementById("stimer").textContent=Math.floor(r/3600000)+"h "+Math.floor((r%3600000)/60000)+"m"}
-  function aOut(){sessionStorage.removeItem("aia_s");clearInterval(aSI);location.reload()}
-  window.addEventListener("DOMContentLoaded",aInit);
-  </script>
+const PARTNER_STAGES={
+  identified:{label:"Identified",color:"#6B6B8A",icon:"○"},
+  researched:{label:"Researched",color:"#3B82F6",icon:"🔍"},
+  outreach_sent:{label:"Outreach Sent",color:"#8B5CF6",icon:"→"},
+  responded:{label:"Responded",color:"#10B981",icon:"↩"},
+  conversation_active:{label:"Conversation Active",color:"#F59E0B",icon:"💬"},
+  partnership_confirmed:{label:"Partnership Confirmed",color:"#EC4899",icon:"🤝"},
+};
 
-  <script type="text/babel">
-    const { useState, useEffect } = React;
+const SIZE_TIERS={
+  sme:{label:"SME (1-50)",color:"#10B981",icon:"🏪"},
+  mme:{label:"MME (51-500)",color:"#F59E0B",icon:"🏛️"},
+  bme:{label:"BME (500+)",color:"#8B5CF6",icon:"🏢"},
+};
 
-    /* ═══ SEGMENTS — CLIENT ICP ═══ */
-    const CLIENT_SEGMENTS = {
-      accounting:{label:"Accounting / Tax / Advisory",color:"#10B981",icon:"📊",titles:["Managing Partner","CEO","COO"],painPt:"partners reviewing the same types of work over and over, catching the same mistakes, while staff keeps producing first drafts that don't match the partner's standards or client-specific preferences"},
-      wealth:{label:"Wealth Management / RIA",color:"#3B82F6",icon:"💼",titles:["CEO","Managing Director","Chief Investment Officer"],painPt:"advisors spending hours personalizing client communications and reviews when the AI could already know each client's preferences, history, and the advisor's decision-making style"},
-      law:{label:"Law Firms",color:"#8B5CF6",icon:"⚖️",titles:["Managing Partner","COO","Director of Practice Management"],painPt:"associates producing first drafts that require extensive partner rework because they lack the context of the partner's preferences, client-specific standards, and historical decision patterns"},
-      general:{label:"Professional Services",color:"#F59E0B",icon:"🏢",titles:["CEO","Managing Partner","COO"],painPt:"professionals spending too much time on repetitive first-pass work that could already reflect their standards, preferences, and client context before they ever touch it"},
-    };
+const CLIENT_SEGMENTS={
+  accounting:{label:"Accounting / Tax / Advisory",color:"#10B981",icon:"📊"},
+  wealth:{label:"Wealth Management / RIA",color:"#3B82F6",icon:"💼"},
+  law:{label:"Law Firms",color:"#8B5CF6",icon:"⚖️"},
+  general:{label:"Professional Services",color:"#F59E0B",icon:"🏢"},
+};
 
-    /* ═══ SEGMENTS — BRAND PARTNERS ═══ */
-    const PARTNER_SEGMENTS = {
-      creator:{label:"Tech Creators & AI Educators",color:"#F59E0B",icon:"🎙️",painPt:"building AI tools that actually work for technical practitioners and professional audiences"},
-      industry_media:{label:"Industry Media & Publications",color:"#3B82F6",icon:"📰",painPt:"covering AI adoption in accounting, legal, and wealth management for firm decision-makers"},
-      community:{label:"AI & Tech Communities",color:"#8B5CF6",icon:"🌐",painPt:"connecting AI builders and enterprise adopters with practical implementations"},
-      technology:{label:"Technology & Integration Partners",color:"#10B981",icon:"⚙️",painPt:"expanding their platform value with personalized AI capabilities for professional services clients"},
-      thought_leader:{label:"Thought Leaders & Design Partners",color:"#EF4444",icon:"🧠",painPt:"researching and validating AI adoption in professional services — credibility and access"},
-      general:{label:"Other Partners",color:"#6366F1",icon:"🤝",painPt:"supporting AI innovation in professional services"},
-    };
+const PARTNER_SEGMENTS={
+  creator:{label:"Tech Creators & AI Educators",color:"#F59E0B",icon:"🎙️"},
+  industry_media:{label:"Industry Media",color:"#3B82F6",icon:"📰"},
+  community:{label:"AI & Tech Communities",color:"#8B5CF6",icon:"🌐"},
+  technology:{label:"Technology Partners",color:"#10B981",icon:"⚙️"},
+  thought_leader:{label:"Thought Leaders",color:"#EF4444",icon:"🧠"},
+  general:{label:"Other Partners",color:"#6366F1",icon:"🤝"},
+};
 
-    /* ═══ SIZE TIERS ═══ */
-    const SIZE_TIERS = {
-      sme:{label:"SME (1-50)",color:"#10B981",icon:"🏪",desc:"Small & mid-size firms"},
-      mme:{label:"MME (51-500)",color:"#F59E0B",icon:"🏛️",desc:"Mid-market enterprises"},
-      bme:{label:"BME (500+)",color:"#8B5CF6",icon:"🏢",desc:"Large enterprises"},
-    };
+const FOLLOW_UP_DAYS=[1,3,7,14,21];
 
-    /* ═══ OUTREACH GENERATORS — CLIENT (SIZE-AWARE) ═══ */
-    const clientLinkedInDM = (lead) => {
-       const s = CLIENT_SEGMENTS[lead.segment] || CLIENT_SEGMENTS.general;
-       const sz = lead.size || "sme";
-       const fname = lead.name.split(' ')[0];
-       const ind = s.label.split(' /')[0].toLowerCase();
-       if(sz==="bme") return `Hi ${fname},\n\nAt ${lead.company}'s scale, I imagine every engagement still flows through the same handful of senior people — and the gap between what staff produces and what partners expect creates constant rework cycles.\n\nWe're building personalized AI assistants for ${ind} firms. Each partner gets an agent that learns their preferences, client-specific needs, and decision-making patterns — so first-pass work arrives already tailored to their standards. Partners review instead of rework.\n\nFully on-premise, your data never leaves your environment. Would a 15-minute briefing be worth your time?`;
-       if(sz==="mme") return `Hey ${fname},\n\nI work with ${ind} firms your size where the managing partners are still the quality bottleneck — reviewing everything, catching the same mistakes, reworking drafts that don't match their standards.\n\nWe build personalized AI assistants that learn each partner's preferences and produce first-pass work that's already tailored before a human touches it. Less rework, fewer repeated errors, more time for the work that actually matters.\n\nDeploys on your own infrastructure — full data sovereignty. Worth a 15-min look?`;
-       return `Hey ${fname},\n\nAs a ${lead.title} at ${lead.company}, I bet you're still the one reviewing everything — and the first drafts you get back never quite match your standards or your clients' needs.\n\nWe build a personalized AI assistant that learns how YOU work — your preferences, your client-specific standards, your decision-making patterns. So the first pass you see is already 80% there, instead of starting from scratch.\n\nIt's not about replacing your judgment — it's about getting a first draft that actually reflects it. Open to a quick 10-min call?`;
-    };
+/* ═══════════════════════════════════════════
+   STORAGE
+═══════════════════════════════════════════ */
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const load=(k)=>{try{const d=localStorage.getItem(k);return d?JSON.parse(d):null}catch(e){return null}};
 
-    const clientVoiceNote = (lead) => {
-       const s = CLIENT_SEGMENTS[lead.segment] || CLIENT_SEGMENTS.general;
-       const fname = lead.name.split(' ')[0];
-       const sz = lead.size || "sme";
-       const ind = s.label.split(' /')[0].toLowerCase();
-       if(sz==="bme") return `[VOICE NOTE SCRIPT — Confident, executive tone]\n\n"Hi ${fname}, this is Tim Lopas from Workstream AI.\n\nI've been thinking about how firms like ${lead.company} handle the expertise bottleneck — the senior partners are the quality standard, but everything flows through them, creating rework cycles and slowing delivery.\n\nWe're building something different from generic AI tools. Each partner gets a personalized AI assistant that actually learns their preferences, their client-specific needs, their review patterns. So when work hits their desk, the first pass already reflects their standards — they review instead of rework.\n\nThe system deploys on your own infrastructure, fully transparent, your IT team has complete visibility. Would a 15-minute executive briefing make sense to see how this works? Let me know."\n\n[TIPS: Keep under 60 seconds. Executive peer tone. Emphasize on-premise security. End with specific ask.]`;
-       if(sz==="mme") return `[VOICE NOTE SCRIPT — Confident, consultative tone]\n\n"Hey ${fname}, it's Tim from Workstream AI.\n\nI came across ${lead.company} and saw you're growing — which usually means the gap between what staff produces and what partners expect is getting wider. More rework, more repeated mistakes, more time reviewing instead of doing high-value work.\n\nWe build personalized AI assistants for ${ind} firms that learn each partner's preferences and produce first-pass work that's already tailored. Think of it as closing the gap between zero and one — AI handles the first draft, humans make the final call.\n\nWe recently helped a firm cut review cycles significantly in the first 60 days. Worth a 15-minute call to see if that applies to ${lead.company}? Let me know."\n\n[TIPS: Keep under 60 seconds. Confident but approachable. Use Tim's actual language about closing the gap between zero and one.]`;
-       return `[VOICE NOTE SCRIPT — Warm, founder-to-founder tone]\n\n"Hey ${fname}, it's Tim from Workstream AI.\n\nI work with ${ind} firms where the managing partner is still the quality standard for everything — which means you're reviewing every deliverable, catching the same mistakes, and the work that hits your desk never quite matches what you'd produce yourself.\n\nWe build a personalized AI assistant that learns how you work — your preferences, your clients' needs, your decision-making patterns. So instead of starting from scratch every time, your first draft already reflects your standards.\n\nIt's not about taking anything away from you — it's about getting you a version that's significantly better than what you were originally handed. Want to see how it works in a quick 10-minute call? Let me know!"\n\n[TIPS: Keep under 60 seconds. Warm and relatable. Use Tim's exact quote about getting a significantly better version. End with specific ask.]`;
-    };
+/* ═══════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════ */
+const calcScore=(lead)=>{
+  const stageScore=PIPELINE_STAGES[lead.pipeline||"not_contacted"]?.score||0;
+  const extraScore=(lead.linkClicked?3:0);
+  return stageScore+extraScore;
+};
+const daysSince=(dateStr)=>{
+  if(!dateStr)return null;
+  const d=new Date(dateStr);const now=new Date();
+  return Math.floor((now-d)/(1000*60*60*24));
+};
+const nextFollowUp=(lead)=>{
+  if(!lead.seqStartDate)return null;
+  const d=daysSince(lead.seqStartDate);
+  if(d===null)return null;
+  const next=FOLLOW_UP_DAYS.find(day=>day>d);
+  return next||null;
+};
+const isOverdue=(lead)=>{
+  if(!lead.seqStartDate)return false;
+  const d=daysSince(lead.seqStartDate);
+  const next=nextFollowUp(lead);
+  if(!next)return false;
+  return d>=next;
+};
 
-    const clientNurture = (lead) => {
-       const s = CLIENT_SEGMENTS[lead.segment] || CLIENT_SEGMENTS.general;
-       const fname = lead.name.split(' ')[0];
-       const sz = lead.size || "sme";
-       const ind = s.label.split(' /')[0].toLowerCase();
-
-       if(sz==="bme") return `[TOUCH 1: THE REWORK PROBLEM AT SCALE]\nSubject: The rework cycle at ${lead.company}\n\nHi ${fname},\n\nAt ${lead.company}'s scale, I see the same pattern: senior partners are the quality standard, but everything flows through them. Staff produces first drafts that don't match partner preferences, client-specific needs, or historical patterns — creating constant rework cycles.\n\nGeneric AI doesn't solve this because ChatGPT doesn't know YOUR voice, YOUR clients, or WHY you make the decisions you do.\n\nWe build personalized AI assistants that do. Each partner gets an agent that learns their specific context — so first-pass work arrives already tailored. Partners review instead of rework.\n\nFully on-premise, open source architecture, your IT team has complete visibility.\n\nWould a 15-minute executive briefing be useful?\n\nBest,\nTimothy Lopas\nFounder, Workstream AI\n\n------------------------------------------------------\n[TOUCH 2: THE MESH NETWORK VISION (5 Days Later)]\nSubject: Re: The rework cycle at ${lead.company}\n\nHi ${fname},\n\nQuick follow-up — here's where this gets powerful at scale:\n\nImagine every professional at ${lead.company} has a personal AI agent. When a partner updates a preference or flags an issue, it automatically flows to the relevant team members' agents. Everyone stays aligned without meetings or manual updates.\n\nOne firm deployed this and saw review cycles cut significantly within 90 days — with staff producing first drafts that matched partner standards on the first attempt.\n\nIs this something ${lead.company} is exploring?\n\n------------------------------------------------------\n[TOUCH 3: THE SECURITY STORY (10 Days Later)]\nSubject: Full data sovereignty for ${lead.company}\n\nHi ${fname},\n\nI know security is non-negotiable at firms your size. Quick note on our approach:\n\n— Deploys on YOUR infrastructure (AWS, Azure, or Google Cloud)\n— Open source architecture — your IT team sees every line of code\n— You control your own encryption keys\n— No data ever leaves your environment\n\nHappy to walk your IT team through the architecture if that would be helpful. No sales pitch, just technical transparency.\n\n------------------------------------------------------\n[TOUCH 4: THE EXECUTIVE CLOSE (21 Days Later)]\nSubject: Closing the loop — ${lead.company}\n\nHi ${fname},\n\nI understand priorities shift at firms your size. I'll leave this here.\n\nIf ${lead.company} ever evaluates personalized AI solutions that amplify partner expertise without compromising data sovereignty, I'd welcome the conversation.\n\nBest,\nTimothy Lopas`;
-
-       if(sz==="mme") return `[TOUCH 1: THE FIRST-PASS PROBLEM]\nSubject: The gap between first draft and final version at ${lead.company}\n\nHi ${fname},\n\nWhen I talk with ${lead.title}s at growing ${ind} firms, they describe the same problem: staff produces a first draft, partner rewrites 60% of it, and the cycle repeats on every engagement.\n\nThe issue isn't talent — it's context. Your team doesn't have access to your preferences, your client-specific standards, or the patterns behind your decisions.\n\nWe build personalized AI assistants that learn that context. So the first pass your team produces already reflects your standards — closing the gap between zero and one.\n\nWould 15 minutes work to see how this applies to ${lead.company}?\n\nBest,\nTimothy Lopas\nFounder, Workstream AI\n\n------------------------------------------------------\n[TOUCH 2: THE BEFORE & AFTER (5 Days Later)]\nSubject: Re: The gap between first draft and final version at ${lead.company}\n\nHey ${fname},\n\nHere's what changed for a firm your size:\n\nBEFORE: Managing partner reviewing every deliverable. Same corrections repeated weekly. Staff guessing at partner preferences.\n\nAFTER: AI assistant learns partner's review patterns, client preferences, and communication style. First drafts arrive 80% aligned. Partner spends time on high-value decisions, not rework.\n\nAs Tim says: "It's not about taking things away. It's about getting you a version that's significantly better than what you were originally handed."\n\nWorth exploring for ${lead.company}?\n\n------------------------------------------------------\n[TOUCH 3: THE FREE DIAGNOSTIC (10 Days Later)]\nSubject: Something useful for ${lead.company}\n\nHi ${fname},\n\nI put together a "First-Pass Quality Diagnostic" for ${ind} firms — it maps where rework cycles cost the most time and where a personalized AI assistant would create the biggest impact.\n\nWant me to send it over? No call required.\n\n------------------------------------------------------\n[TOUCH 4: THE RESPECTFUL CLOSE (21 Days Later)]\nSubject: Closing the loop\n\nHey ${fname}, timing might be off — totally fine.\n\nIf ${lead.company} ever hits the point where rework cycles are eating into growth capacity, we'd be a strong fit.\n\nKeep us in mind.\n\nBest,\nTimothy Lopas`;
-
-       return `[TOUCH 1: THE REVIEW BOTTLENECK]\nSubject: You're probably reviewing everything at ${lead.company}\n\nHi ${fname},\n\nIf you're a ${lead.title} at a ${ind} firm, I'd bet the work that hits your desk rarely matches your standards on the first try. You end up reworking, correcting, and reviewing everything — because your team doesn't have access to your preferences, your client context, or the reasoning behind your decisions.\n\nWe build a personalized AI assistant that learns how YOU work. Your preferences, your clients' needs, your communication style. So the first draft you see is already 80% there.\n\nIt's not about replacing you — it's about getting you a version that's significantly better than what you were originally handed.\n\nOpen to a quick 10-minute call?\n\nBest,\nTimothy Lopas\nFounder, Workstream AI\n\n------------------------------------------------------\n[TOUCH 2: THE REAL DIFFERENCE (4 Days Later)]\nSubject: Re: You're probably reviewing everything at ${lead.company}\n\nHey ${fname},\n\nHere's the thing about generic AI (ChatGPT, Claude, etc.) — they can never write in your voice, understand your personality, or know why you make the decisions you do. They lack YOUR context.\n\nOur AI assistant is different because it's personalized to YOU. It learns from small, specific context — your client history, your communication preferences, your review patterns. The deeper the context, the better the output.\n\nOne firm owner told me he freed up 10+ hours a week once his assistant learned his standards. Worth 10 minutes to explore?\n\n------------------------------------------------------\n[TOUCH 3: THE FREE FRAMEWORK (10 Days Later)]\nSubject: Something useful for ${lead.company} — no call needed\n\nHi ${fname},\n\nI put together a one-page "AI Readiness Scorecard" for ${ind} firm owners — it helps you figure out where a personalized AI assistant would save you the most time.\n\nWant me to send it over? Useful whether we ever work together or not.\n\n------------------------------------------------------\n[TOUCH 4: THE HONEST CLOSE (14 Days Later)]\nSubject: Last note from me\n\nHey ${fname}, I'll keep this short — timing might not be right, and that's fine.\n\nIf you ever find yourself buried in reviews and rework when you should be growing ${lead.company}, just reply to this thread.\n\nCheers,\nTimothy Lopas`;
-    };
-
-    const partnerLinkedInDM = (lead) => {
-       const fname = lead.name.split(' ')[0] || "there";
-       const s = PARTNER_SEGMENTS[lead.segment] || PARTNER_SEGMENTS.general;
-       if(lead.segment==="creator") return `Hi ${fname},\n\nI've been following your work closely — ${lead.company} is exactly the kind of platform where the gap between what AI can do generically and what it could do if it actually knew you and your workflow is most obvious.\n\nI'm building personalized AI assistants that learn individual working styles, preferences, and decision patterns — not generic tools, but something that actually reflects how a specific person works.\n\nI'd love to build a demo tailored to your workflow and show you what it looks like. No pitch — just something useful. Would you be open to it?`;
-       if(lead.segment==="technology") return `Hi ${fname},\n\nI noticed ${lead.company} serves exactly the professional services firms we're building personalized AI assistants for — accounting, legal, and wealth management.\n\nOur product sits as a personalization layer on top of existing workflows: each professional gets an AI agent that learns their preferences and produces first-pass work already tailored to their standards. We deploy on-premise, so IT security concerns are fully addressed.\n\nI'd love to explore whether there's an integration or co-sell opportunity here. Would 15 minutes make sense?`;
-       return `Hi ${fname},\n\nI'm building personalized AI assistants for professional services firms — designed to amplify human expertise, not replace it. Each professional gets an agent that learns their specific context so the first-pass work they receive already reflects their standards.\n\nGiven ${lead.company}'s position in the ${s.label.toLowerCase()} space, I think there's a meaningful conversation to be had about collaboration.\n\nWould you be open to a brief call to explore alignment?`;
-    };
-
-    const partnerVoiceNote = (lead) => {
-       const fname = lead.name.split(' ')[0] || "there";
-       const s = PARTNER_SEGMENTS[lead.segment] || PARTNER_SEGMENTS.general;
-       if(lead.segment==="creator") return `[VOICE NOTE SCRIPT — Genuine, peer tone]\n\n"Hey ${fname}, it's Tim Lopas from Workstream AI.\n\nI've been following your work for a while and I noticed something — the gap between what generic AI can do and what it could do if it actually knew you, your workflow, your preferences — that gap is massive.\n\nWe're building personalized AI assistants that close that gap. I'd love to build something specific to your workflow and just show it to you — no pitch, no strings attached. If it's useful, great. If not, I'll have learned something.\n\nWould you be open to it? Happy to start building before we even talk."\n\n[TIPS: Keep under 60 seconds. Genuine and specific. Lead with something you built, not something you're selling. This is a design partner conversation.]`;
-       return `[VOICE NOTE SCRIPT — Professional, collaborative tone]\n\n"Hi ${fname}, Tim Lopas from Workstream AI.\n\nWe're building personalized AI assistants for professional services firms — accounting, law, and wealth management. Each professional gets an agent that learns their specific preferences and decision-making patterns, so the work that hits their desk is already 80% there.\n\nGiven what ${lead.company} does in the ${s.label.toLowerCase()} space, I think there's a real alignment worth exploring — whether that's an integration, a content collaboration, or just a conversation about where the market is going.\n\nWould a brief call make sense? Looking forward to connecting."\n\n[TIPS: Keep under 60 seconds. Focus on shared mission. Mention specific alignment with their work.]`;
-    };
-
-    const partnerNurture = (lead) => {
-       const fname = lead.name.split(' ')[0] || "there";
-       const s = PARTNER_SEGMENTS[lead.segment] || PARTNER_SEGMENTS.general;
-       const isCreator = lead.segment === "creator";
-       return `[TOUCH 1: THE VALUE-FIRST APPROACH]\nSubject: ${isCreator ? `I built something for you, ${fname}` : `Partnership conversation — Workstream AI x ${lead.company}`}\n\n${isCreator ?
-`Hi ${fname},\n\nI don't want to pitch you anything. Instead, I want to show you something.\n\nWe build personalized AI assistants — and I've been thinking about what one would look like if it was built specifically for someone with your workflow at ${lead.company}.\n\nWould you be open to me building a demo tailored to your actual work? No cost, no commitment. If it's useful, great. If not, you'll have some interesting feedback for me.\n\nBest,\nTimothy Lopas\nFounder, Workstream AI` :
-`Hi ${fname},\n\nI lead Workstream AI — we build personalized AI assistants for professional services firms that learn each professional's preferences and produce first-pass work already tailored to their standards.\n\nGiven ${lead.company}'s work in the ${s.label.toLowerCase()} space, I see meaningful overlap in who we serve and what we're trying to accomplish. I'd love to explore whether collaboration makes sense.\n\nWould 15 minutes work?\n\nBest,\nTimothy Lopas\nFounder, Workstream AI`}\n\n------------------------------------------------------\n[TOUCH 2: THE VISION ALIGNMENT (5 Days Later)]\nSubject: Re: ${isCreator ? `I built something for you, ${fname}` : `Partnership — Workstream AI x ${lead.company}`}\n\nHi ${fname},\n\nQuick follow-up. The core of what we're building:\n\nGeneric AI tools (ChatGPT, Claude) can never write in your voice, understand your personality, or know why you make the decisions you do — unless they're given that specific context. That gap is what we address.\n\nEvery professional gets a personal AI agent that learns their context — client history, communication preferences, decision patterns. The deeper the context, the more precise the output. Small, highly specific context files outperform one large generic file every time.\n\nThis is the future of how professional services gets delivered. I'd love to explore where our paths intersect.\n\n------------------------------------------------------\n[TOUCH 3: THE SPECIFIC PROPOSAL (10 Days Later)]\nSubject: A specific idea for ${lead.company}\n\nHi ${fname},\n\n${isCreator ?
-`Here's a concrete idea: what if I built a custom AI assistant demo for your workflow and you documented the experience? Your audience of IT professionals would find it genuinely useful — and it would demonstrate exactly what personalized AI can do versus generic tools.\n\nNo sponsorship arrangement required. Just collaboration.` :
-`Here's a concrete idea: ${lead.company} clients are exactly the firms we serve. What if we explored a joint case study or co-marketing piece on how personalized AI changes delivery quality in professional services?\n\nI'd handle the content production. You'd have first right of refusal on everything before it goes out.`}\n\n------------------------------------------------------\n[TOUCH 4: THE GRACEFUL CLOSE (21 Days Later)]\nSubject: Closing the loop\n\nHi ${fname},\n\nI'll leave this here — timing may not be right.\n\nIf ${lead.company} ever explores how personalized AI can amplify your team's expertise without compromising your data or your professional standards, we'd be an interesting conversation.\n\nBest,\nTimothy Lopas`;
-    };
-
-    /* ═══ MOCK LEAD GENERATORS ═══ */
-    const generateMockClients = () => { return []; };
-
-    /* ═══ COPY BUTTON ═══ */
-    function CopyBtn({text,label="Copy"}){
-      const[c,setC]=useState(false);
-      return <button onClick={()=>{navigator.clipboard.writeText(text);setC(true);setTimeout(()=>setC(false),2000)}} className="btn-secondary" style={{padding:"8px 16px",fontSize:13,background:c?"rgba(16,185,129,.2)":"transparent",color:c?"#10B981":"var(--text)",borderColor:c?"#10B981":"var(--border)"}}>{c?"✓ Copied":label}</button>;
+/* ═══════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════ */
+function AuthGate({onAuth}){
+  const[pin,setPin]=useState("");
+  const[err,setErr]=useState("");
+  const[attempts,setAttempts]=useState(0);
+  const[locked,setLocked]=useState(false);
+  const submit=()=>{
+    if(locked)return;
+    const u=AUTH_USERS.find(u=>u.pin===pin.trim().toUpperCase());
+    if(u){onAuth(u)}
+    else{
+      const a=attempts+1;setAttempts(a);setErr(`Invalid code. ${5-a} attempts remaining.`);setPin("");
+      if(a>=5){setLocked(true);setErr("Account locked for 15 minutes.")}
     }
+  };
+  return(
+    <div className="auth-overlay">
+      <div className="auth-card">
+        <div style={{fontSize:40,marginBottom:16}}>🔒</div>
+        <div style={{fontSize:20,fontWeight:800,marginBottom:4}}>WAI Operating System</div>
+        <div style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>Authorized Access Only</div>
+        <input className="input" type="password" placeholder="Access Code" value={pin} onChange={e=>setPin(e.target.value)} onKeyDown={e=>e.key==="Enter"&&submit()} style={{marginBottom:12,textAlign:"center",letterSpacing:"0.2em"}}/>
+        {err&&<div style={{color:"var(--red)",fontSize:12,marginBottom:12}}>{err}</div>}
+        <button className="btn btn-primary" onClick={submit} style={{width:"100%",padding:"12px"}}>Authenticate</button>
+        <div style={{fontSize:10,color:"var(--muted)",marginTop:16}}>WORKSTREAM AI · SECURED ACCESS</div>
+      </div>
+    </div>
+  );
+}
 
-    /* ═══ OUTREACH PANEL ═══ */
-    function OutreachPanel({lead,track,onClear}){
-      const isPartner = track==="partners";
-      const segs = isPartner ? PARTNER_SEGMENTS : CLIENT_SEGMENTS;
-      const s = segs[lead.segment] || segs.general;
-      const dm = isPartner ? partnerLinkedInDM(lead) : clientLinkedInDM(lead);
-      const vn = isPartner ? partnerVoiceNote(lead) : clientVoiceNote(lead);
-      const nurture = isPartner ? partnerNurture(lead) : clientNurture(lead);
+/* ═══════════════════════════════════════════
+   PIPELINE STATUS SELECT
+═══════════════════════════════════════════ */
+function PipelineSelect({value,onChange}){
+  const s=PIPELINE_STAGES[value||"not_contacted"];
+  return(
+    <select value={value||"not_contacted"} onChange={e=>onChange(e.target.value)}
+      style={{padding:"4px 8px",background:`${s.color}18`,color:s.color,border:`1px solid ${s.color}40`,borderRadius:8,fontSize:11,fontWeight:700,cursor:"pointer",outline:"none"}}>
+      {Object.entries(PIPELINE_STAGES).map(([k,v])=><option key={k} value={k}>{v.icon} {v.label}</option>)}
+    </select>
+  );
+}
 
-      return (
-        <div className="outreach-grid">
+/* ═══════════════════════════════════════════
+   EDIT FIELD
+═══════════════════════════════════════════ */
+function EditField({value,placeholder,onSave,type="text"}){
+  const[editing,setEditing]=useState(false);
+  const[val,setVal]=useState(value||"");
+  useEffect(()=>{setVal(value||"")},[value]);
+  if(editing)return <input autoFocus value={val} onChange={e=>setVal(e.target.value)} onBlur={()=>{setEditing(false);onSave(val)}} onKeyDown={e=>{if(e.key==="Enter"){setEditing(false);onSave(val)}if(e.key==="Escape"){setEditing(false);setVal(value||"")}}} placeholder={placeholder} style={{padding:"3px 6px",background:"var(--bg)",border:"1px solid var(--accent)",borderRadius:5,color:"var(--text)",fontSize:11,width:"100%",outline:"none",fontFamily:"inherit"}}/>;
+  if(!val)return <span onClick={()=>setEditing(true)} style={{cursor:"pointer",color:"var(--muted)",fontSize:11,borderBottom:"1px dashed var(--border)"}}>+ {placeholder}</span>;
+  const href=type==="email"?`mailto:${val}`:val.startsWith("http")?val:`https://${val}`;
+  const icon=type==="email"?"📧":val.includes("linkedin")?"🔗":"🌐";
+  const display=val.replace(/^https?:\/\/(www\.)?/,"").replace(/\/$/,"").substring(0,24);
+  return <span style={{display:"flex",alignItems:"center",gap:3}}>
+    <a href={href} target="_blank" rel="noreferrer" style={{color:type==="email"?"var(--amber)":val.includes("linkedin")?"#0A66C2":"var(--accent2)",textDecoration:"none",fontSize:11,fontWeight:600}} onClick={e=>e.stopPropagation()}>{icon} {display}</a>
+    <button onClick={e=>{e.stopPropagation();setEditing(true)}} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:9,padding:"1px 3px",opacity:.5}}>✎</button>
+  </span>;
+}
+
+/* ═══════════════════════════════════════════
+   COPY BUTTON
+═══════════════════════════════════════════ */
+function CopyBtn({text,label="Copy"}){
+  const[c,setC]=useState(false);
+  return <button onClick={()=>{navigator.clipboard.writeText(text);setC(true);setTimeout(()=>setC(false),2000)}} className="btn btn-secondary btn-sm" style={{background:c?"rgba(16,185,129,.2)":"transparent",color:c?"var(--green)":"var(--text)",borderColor:c?"var(--green)":"var(--border)"}}>{c?"✓ Copied":label}</button>;
+}
+
+/* ═══════════════════════════════════════════
+   OUTREACH PANEL
+═══════════════════════════════════════════ */
+function OutreachPanel({lead,onClose}){
+  const s=CLIENT_SEGMENTS[lead.segment]||CLIENT_SEGMENTS.general;
+  const sz=lead.size||"sme";
+  const fname=lead.name?lead.name.split(" ")[0]:"there";
+  const ind=s.label.split(" /")[0].toLowerCase();
+
+  const dm=sz==="bme"?
+    `Hi ${fname},\n\nAt ${lead.company}'s scale, every engagement still flows through the same handful of senior people — and the gap between what staff produces and what partners expect creates constant rework cycles.\n\nWe build personalized AI assistants for ${ind} firms. Each partner gets an agent that learns their preferences and produces first-pass work already tailored to their standards. Partners review instead of rework.\n\nFully on-premise, your data never leaves your environment. Worth a 15-minute briefing?`:
+    sz==="mme"?
+    `Hey ${fname},\n\nI work with ${ind} firms your size where the managing partners are still the quality bottleneck — reviewing everything, catching the same mistakes.\n\nWe build personalized AI assistants that learn each partner's preferences and produce first-pass work that's already tailored. Less rework, fewer repeated errors, more time for what matters.\n\nDeploys on your own infrastructure — full data sovereignty. Worth a 15-min look?`:
+    `Hey ${fname},\n\nAs a ${lead.title} at ${lead.company}, I bet the first drafts you receive never quite match your standards or your clients' needs.\n\nWe build a personalized AI assistant that learns how YOU work — your preferences, your client-specific standards, your decision-making patterns. So the first pass is already 80% there.\n\nNot replacing your judgment — reflecting it. Open to a quick 10-min call?`;
+
+  const vn=sz==="bme"?
+    `[VOICE NOTE — Executive tone]\n\n"Hi ${fname}, Tim Lopas from Workstream AI.\n\nFirms like ${lead.company} deal with the same challenge — senior partners are the quality standard, but everything flows through them, creating rework cycles and slowing delivery.\n\nWe build personalized AI assistants that capture each partner's preferences so first-pass work arrives already tailored. On-premise, IT-transparent, data sovereignty guaranteed.\n\nWould a 15-minute executive briefing make sense? Let me know."\n\n[TIPS: Under 60 seconds. Executive peer tone. Emphasize on-premise security.]`:
+    sz==="mme"?
+    `[VOICE NOTE — Consultative tone]\n\n"Hey ${fname}, it's Tim from Workstream AI.\n\nI came across ${lead.company} — you're in that growth phase where the gap between what staff produces and what partners expect gets wider. More rework, more repeated mistakes.\n\nWe close that gap with personalized AI assistants that learn each partner's context. First drafts arrive 80% aligned.\n\nRecently helped a firm cut review cycles by 40% in 60 days. Worth 15 minutes? Let me know."\n\n[TIPS: Under 60 seconds. Use Tim's language about closing the gap between zero and one.]`:
+    `[VOICE NOTE — Founder-to-founder tone]\n\n"Hey ${fname}, it's Tim from Workstream AI.\n\nI work with ${ind} firms where the managing partner is still the quality standard for everything — which means the work that hits your desk never quite reflects what you'd produce yourself.\n\nWe build a personalized AI assistant that learns how you work — your preferences, your clients' needs, your review patterns.\n\nAs Tim says: getting you a version significantly better than what you were originally handed. Want to see how it works in 10 minutes? Let me know!"\n\n[TIPS: Under 60 seconds. Warm and relatable. End with specific ask.]`;
+
+  const nurture=`[TOUCH 1]\nSubject: The rework cycle at ${lead.company}\n\nHi ${fname},\n\nStaff produces first drafts that don't match partner standards — and partners spend hours correcting the same mistakes. Generic AI doesn't fix this because ChatGPT doesn't know YOUR voice or clients.\n\nWe build personalized AI assistants that do. Each partner gets an agent that learns their specific context.\n\nFully on-premise, open source architecture. Worth 15 minutes?\n\nTimothy Lopas, Workstream AI\n\n------\n[TOUCH 2 — Day 5]\nSubject: Re: The rework cycle at ${lead.company}\n\nHi ${fname},\n\nBEFORE: Managing partner reviewing every deliverable. Same corrections weekly. Staff guessing at standards.\n\nAFTER: AI learns review patterns and client preferences. First drafts 80% aligned. Partner freed for high-value work.\n\n"It's not about taking things away. It's about getting you a version significantly better than what you were originally handed." — Tim Lopas\n\nWorth exploring for ${lead.company}?\n\n------\n[TOUCH 3 — Day 10]\nSubject: Something useful for ${lead.company}\n\nHi ${fname},\n\nI put together a First-Pass Quality Diagnostic for ${ind} firms — maps where rework cycles cost the most time and where a personalized AI assistant creates the biggest impact.\n\nWant me to send it over? No call required.\n\n------\n[TOUCH 4 — Day 21]\nSubject: Closing the loop\n\nHey ${fname}, timing might be off — totally fine.\n\nIf ${lead.company} ever hits the wall where rework cycles are eating into growth capacity, we'd be a strong fit.\n\nBest, Timothy Lopas`;
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",display:"flex",alignItems:"center",justifyContent:"flex-end",zIndex:200}}>
+      <div style={{background:"var(--card)",width:"520px",height:"100%",overflow:"auto",padding:"24px",borderLeft:"1px solid var(--border)"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
-            <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,padding:24,position:"sticky",top:24}}>
-              <div className="status-badge" style={{background:s.color+"15",color:s.color,display:"inline-block",marginBottom:16}}>{s.icon} {s.label}</div>
-              <h2 style={{margin:"0 0 4px 0",fontSize:24}}>{lead.name}</h2>
-              <div style={{color:"var(--muted)",fontSize:14}}>{lead.title}</div>
-              <div style={{color:"var(--muted)",fontSize:14,marginBottom:4}}>{lead.company}</div>
-              <div style={{color:"var(--muted)",fontSize:13,marginBottom:8}}>📍 {lead.location||"Global"}</div>
-              {lead.website?<div style={{marginBottom:6}}><a href={lead.website.startsWith('http')?lead.website:`https://${lead.website}`} target="_blank" rel="noreferrer" style={{color:"var(--accent)",textDecoration:"none",fontSize:13,fontWeight:600}}>🌐 {lead.website.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,'').substring(0,35)}</a></div>:null}
-              {lead.email?<div style={{marginBottom:6}}><a href={`mailto:${lead.email}`} style={{color:"#F59E0B",textDecoration:"none",fontSize:13,fontWeight:600}}>📧 {lead.email}</a></div>:null}
-              {lead.linkedin?<div style={{marginBottom:16}}><a href={lead.linkedin.startsWith('http')?lead.linkedin:`https://${lead.linkedin}`} target="_blank" rel="noreferrer" style={{color:"#0A66C2",textDecoration:"none",fontSize:13,fontWeight:600}}>🔗 {lead.linkedin.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,'').substring(0,35)}</a></div>:null}
-              <div style={{fontSize:11,fontWeight:700,textTransform:"uppercase",color:"var(--muted)",marginBottom:8,letterSpacing:".05em"}}>{isPartner?"Partnership Angle":"Pain Point"}:</div>
-              <div style={{fontSize:14,background:"var(--surface)",padding:12,borderRadius:8,border:"1px solid var(--border)",marginBottom:24,lineHeight:1.5}}>"{s.painPt}"</div>
-              {lead.linkedin?<a href={lead.linkedin.startsWith('http')?lead.linkedin:`https://${lead.linkedin}`} target="_blank" rel="noreferrer" style={{textDecoration:"none"}}><button className="btn-secondary" style={{width:"100%",marginBottom:12,padding:"12px",background:"rgba(10,102,194,.1)",color:"#0A66C2",borderColor:"rgba(10,102,194,.3)"}}>🔗 Open LinkedIn Profile</button></a>:null}
-              <button className="btn-secondary" style={{width:"100%"}} onClick={onClear}>Clear Selection</button>
-            </div>
+            <div style={{fontWeight:800,fontSize:18}}>{lead.name||"Lead"}</div>
+            <div style={{color:"var(--muted)",fontSize:13}}>{lead.title} @ <strong style={{color:"var(--text)"}}>{lead.company}</strong></div>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:24}}>
-            {/* LinkedIn DM */}
-            <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:16,overflow:"hidden"}}>
-              <div style={{background:"var(--card)",padding:"16px 20px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontWeight:800,color:"#0A66C2"}}>📩 LinkedIn Connect DM</div><CopyBtn text={dm}/></div>
-              <div style={{padding:"16px 20px"}}><textarea readOnly value={dm} style={{width:"100%",height:180,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:8,padding:16,fontSize:14,color:"var(--text)",fontFamily:"inherit",resize:"none",lineHeight:1.5}}/></div>
+          <button onClick={onClose} style={{background:"var(--border)",border:"none",borderRadius:8,padding:"6px 12px",color:"var(--text)",cursor:"pointer",fontWeight:700,fontSize:13}}>✕ Close</button>
+        </div>
+        {lead.website&&<div style={{marginBottom:6}}><a href={lead.website} target="_blank" rel="noreferrer" style={{color:"var(--accent2)",fontSize:13,fontWeight:600,textDecoration:"none"}}>🌐 {lead.website.replace(/^https?:\/\/(www\.)?/,"").substring(0,40)}</a></div>}
+        {lead.linkedin&&<div style={{marginBottom:6}}><a href={lead.linkedin} target="_blank" rel="noreferrer" style={{color:"#0A66C2",fontSize:13,fontWeight:600,textDecoration:"none"}}>🔗 {lead.linkedin.replace(/^https?:\/\/(www\.)?/,"").substring(0,40)}</a></div>}
+        {lead.email&&<div style={{marginBottom:20}}><a href={`mailto:${lead.email}`} style={{color:"var(--amber)",fontSize:13,fontWeight:600,textDecoration:"none"}}>📧 {lead.email}</a></div>}
+        <hr className="divider"/>
+        {[["LinkedIn DM",dm],["Voice Note Script",vn],["4-Step Nurture Sequence",nurture]].map(([title,text])=>(
+          <div key={title} style={{marginBottom:20}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{fontWeight:700,fontSize:14}}>{title}</div>
+              <CopyBtn text={text} label="Copy Script"/>
             </div>
-            {/* Voice Note */}
-            <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:16,overflow:"hidden"}}>
-              <div style={{background:"var(--card)",padding:"16px 20px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontWeight:800,color:"#10B981"}}>🎙️ Voice Note Script</div><CopyBtn text={vn}/></div>
-              <div style={{padding:"16px 20px"}}><textarea readOnly value={vn} style={{width:"100%",height:240,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:8,padding:16,fontSize:14,color:"var(--text)",fontFamily:"inherit",resize:"none",lineHeight:1.5}}/></div>
-            </div>
-            {/* 4-Step Nurture */}
-            <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:16,overflow:"hidden"}}>
-              <div style={{background:"var(--card)",padding:"16px 20px",borderBottom:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{fontWeight:800,color:"var(--accent)"}}>📧 4-Step Nurture Campaign</div><CopyBtn text={nurture} label="Copy Entire Sequence"/></div>
-              <div style={{padding:"16px 20px"}}><textarea readOnly value={nurture} style={{width:"100%",height:500,background:"var(--bg)",border:"1px solid var(--border)",borderRadius:8,padding:16,fontSize:14,color:"var(--text)",fontFamily:"inherit",resize:"none",lineHeight:1.6}}/></div>
-            </div>
+            <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 14px",fontSize:12,color:"var(--muted)",lineHeight:1.7,whiteSpace:"pre-wrap",maxHeight:180,overflowY:"auto"}}>{text}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   METRICS DASHBOARD
+═══════════════════════════════════════════ */
+function Dashboard({leads,partners}){
+  const stats=useMemo(()=>{
+    const total=leads.length;
+    const byStage=(stage)=>leads.filter(l=>(l.pipeline||"not_contacted")===stage).length;
+    const connSent=byStage("connection_sent")+byStage("connected")+byStage("message_sent")+byStage("replied")+byStage("voice_note_sent")+byStage("call_booked")+byStage("closed");
+    const connAccepted=byStage("connected")+byStage("message_sent")+byStage("replied")+byStage("voice_note_sent")+byStage("call_booked")+byStage("closed");
+    const msgSent=byStage("message_sent")+byStage("replied")+byStage("voice_note_sent")+byStage("call_booked")+byStage("closed");
+    const replied=byStage("replied")+byStage("voice_note_sent")+byStage("call_booked")+byStage("closed");
+    const vnSent=byStage("voice_note_sent")+byStage("call_booked")+byStage("closed");
+    const callBooked=byStage("call_booked")+byStage("closed");
+    const closed=byStage("closed");
+    const overdue=leads.filter(l=>isOverdue(l)&&(l.pipeline||"not_contacted")!=="closed"&&(l.pipeline||"not_contacted")!=="not_interested").length;
+    const partnerConfirmed=partners.filter(p=>p.partnerStage==="partnership_confirmed").length;
+    const connRate=connSent>0?Math.round(connAccepted/connSent*100):0;
+    const replyRate=msgSent>0?Math.round(replied/msgSent*100):0;
+    const bookRate=replied>0?Math.round(callBooked/replied*100):0;
+    const rev=closed*75000;
+    return{total,connSent,connAccepted,msgSent,replied,vnSent,callBooked,closed,overdue,partnerConfirmed,connRate,replyRate,bookRate,rev};
+  },[leads,partners]);
+
+  const MetricCard=({label,val,sub,cls,icon})=>(
+    <div className={`stat-card ${cls}`}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+        <div>
+          <div className="stat-val">{typeof val==="number"&&val>999?`${(val/1000).toFixed(1)}K`:val}</div>
+          <div className="stat-label">{label}</div>
+          {sub&&<div className="stat-sub">{sub}</div>}
+        </div>
+        <div style={{fontSize:24}}>{icon}</div>
+      </div>
+    </div>
+  );
+
+  return(
+    <div>
+      <div className="page-title">📊 Metrics Dashboard</div>
+      <div className="page-sub">Auto-calculated from pipeline. Updates in real time.</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
+        <MetricCard label="Total Pipeline" val={stats.total} cls="blue" icon="🎯"/>
+        <MetricCard label="Connections Sent" val={stats.connSent} cls="purple" icon="→"/>
+        <MetricCard label="Connected" val={stats.connAccepted} sub={`${stats.connRate}% accept rate`} cls="cyan" icon="✓"/>
+        <MetricCard label="Messages Sent" val={stats.msgSent} cls="amber" icon="✉"/>
+        <MetricCard label="Replies" val={stats.replied} sub={`${stats.replyRate}% reply rate`} cls="green" icon="↩"/>
+        <MetricCard label="Voice Notes" val={stats.vnSent} cls="pink" icon="🎙"/>
+        <MetricCard label="Calls Booked" val={stats.callBooked} sub={`${stats.bookRate}% book rate`} cls="amber" icon="📅"/>
+        <MetricCard label="Closed Won" val={stats.closed} sub={`$${(stats.rev/1000).toFixed(0)}K revenue`} cls="green" icon="💰"/>
+      </div>
+      <div className="grid-3" style={{marginBottom:20}}>
+        <div className="stat-card red">
+          <div style={{display:"flex",justifyContent:"space-between"}}>
+            <div><div className="stat-val">{stats.overdue}</div><div className="stat-label">Overdue Follow-Ups</div><div className="stat-sub">Needs immediate attention</div></div>
+            <div style={{fontSize:24}}>🚨</div>
           </div>
         </div>
-      );
-    }
+        <div className="stat-card green">
+          <div style={{display:"flex",justifyContent:"space-between"}}>
+            <div><div className="stat-val">{stats.partnerConfirmed}</div><div className="stat-label">Partners Confirmed</div><div className="stat-sub">Active brand partnerships</div></div>
+            <div style={{fontSize:24}}>🤝</div>
+          </div>
+        </div>
+        <div className="stat-card purple">
+          <div style={{display:"flex",justifyContent:"space-between"}}>
+            <div><div className="stat-val">${stats.rev.toLocaleString()}</div><div className="stat-label">Pipeline Value</div><div className="stat-sub">At $75K avg deal size</div></div>
+            <div style={{fontSize:24}}>💵</div>
+          </div>
+        </div>
+      </div>
+      <div className="card">
+        <div style={{fontWeight:700,fontSize:15,marginBottom:16}}>Funnel Conversion</div>
+        {[
+          ["Prospects → Connected",stats.total,stats.connAccepted,"cyan"],
+          ["Connected → Replied",stats.connAccepted,stats.replied,"green"],
+          ["Replied → Call Booked",stats.replied,stats.callBooked,"amber"],
+          ["Call Booked → Closed",stats.callBooked,stats.closed,"pink"],
+        ].map(([label,from,to,color])=>{
+          const pct=from>0?Math.round(to/from*100):0;
+          return(
+            <div key={label} style={{marginBottom:14}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontSize:13}}>{label}</span>
+                <span style={{fontSize:13,fontWeight:700,color:`var(--${color})`}}>{to} / {from} ({pct}%)</span>
+              </div>
+              <div style={{height:6,background:"var(--border)",borderRadius:3,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${pct}%`,background:`var(--${color})`,borderRadius:3,transition:"width .3s"}}/>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="card" style={{marginTop:16}}>
+        <div style={{fontWeight:700,fontSize:15,marginBottom:12}}>Integrations Hub</div>
+        <div className="grid-3">
+          {[
+            {name:"Apollo",desc:"Lead verification & email validation",status:"Configure",color:"var(--blue)",url:"https://app.apollo.io"},
+            {name:"GHL (GoHighLevel)",desc:"Auto-trigger follow-up when call booked",status:"Configure",color:"var(--accent)",url:"https://app.gohighlevel.com"},
+            {name:"Zapier",desc:"Automate handoffs between tools",status:"Configure",color:"var(--amber)",url:"https://zapier.com"},
+            {name:"Calendly",desc:"Embed booking links in outreach CTAs",status:"Configure",color:"var(--accent2)",url:"https://calendly.com"},
+            {name:"Asana",desc:"Auto-create tasks on high-interest stage",status:"Configure",color:"var(--pink)",url:"https://app.asana.com"},
+            {name:"Slack",desc:"Real-time notifications on pipeline milestones",status:"Configure",color:"var(--green)",url:"https://slack.com"},
+          ].map(int=>(
+            <a key={int.name} href={int.url} target="_blank" rel="noreferrer" style={{textDecoration:"none"}}>
+              <div className="card-sm" style={{cursor:"pointer",transition:"border-color .15s",borderColor:"var(--border)"}} onMouseEnter={e=>e.currentTarget.style.borderColor=int.color} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
+                <div style={{fontWeight:700,fontSize:13,color:int.color,marginBottom:4}}>{int.name}</div>
+                <div style={{fontSize:11,color:"var(--muted)",marginBottom:8}}>{int.desc}</div>
+                <span style={{fontSize:10,background:`${int.color}18`,color:int.color,padding:"2px 8px",borderRadius:6,fontWeight:700}}>→ {int.status}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-    /* ═══ EDITABLE FIELD WITH CLICKABLE LINKS ═══ */
-    function EditField({value,placeholder,onSave,type="text"}){
-      const[editing,setEditing]=useState(false);
-      const[val,setVal]=useState(value||"");
-      useEffect(()=>{setVal(value||"")},[value]);
-      if(editing)return <input autoFocus value={val} onChange={e=>setVal(e.target.value)} onBlur={()=>{setEditing(false);onSave(val)}} onKeyDown={e=>{if(e.key==="Enter"){setEditing(false);onSave(val)}if(e.key==="Escape"){setEditing(false);setVal(value||"")}}} placeholder={placeholder} style={{padding:"4px 8px",background:"var(--bg)",border:"1px solid var(--accent)",borderRadius:6,color:"var(--text)",fontSize:12,width:"100%",outline:"none",fontFamily:"inherit"}} />;
-      if(!val)return <span onClick={()=>setEditing(true)} style={{cursor:"pointer",color:"var(--muted)",fontSize:12,fontWeight:400,borderBottom:"1px dashed var(--border)",paddingBottom:1}}>+ Add {placeholder}</span>;
-      const href=type==="email"?`mailto:${val}`:val.startsWith("http")?val:`https://${val}`;
-      const icon=type==="email"?"📧":val.includes("linkedin")?"🔗":"🌐";
-      const display=val.replace(/^https?:\/\/(www\.)?/,'').replace(/\/$/,'').substring(0,28);
-      return <span style={{display:"flex",alignItems:"center",gap:4}}>
-        <a href={href} target="_blank" rel="noreferrer" style={{color:type==="email"?"#F59E0B":val.includes("linkedin")?"#0A66C2":"var(--accent)",textDecoration:"none",fontSize:12,fontWeight:600}} onClick={e=>e.stopPropagation()}>{icon} {display}</a>
-        <button onClick={e=>{e.stopPropagation();setEditing(true)}} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:10,padding:"2px 4px",opacity:0.5}}>✎</button>
-      </span>;
-    }
+/* ═══════════════════════════════════════════
+   PROSPECT DATABASE
+═══════════════════════════════════════════ */
+function ProspectDB({leads,setLeads}){
+  const[filterSeg,setFilterSeg]=useState("all");
+  const[filterSize,setFilterSize]=useState("all");
+  const[filterStage,setFilterStage]=useState("all");
+  const[filterOverdue,setFilterOverdue]=useState(false);
+  const[search,setSearch]=useState("");
+  const[page,setPage]=useState(1);
+  const[sortBy,setSortBy]=useState("score");
+  const[activeLead,setActiveLead]=useState(null);
+  const PER_PAGE=50;
 
-    /* ═══ LEAD TABLE ═══ */
-    function LeadTable({leads,segments,onSelectLead,onUpdateStatus,onUpdateField,currentPage,setCurrentPage,showSize}){
-      const perPage=100;
-      const start=(currentPage-1)*perPage;
-      const page=leads.slice(start,start+perPage);
-      const totalPages=Math.ceil(leads.length/perPage);
-      const tdStyle={padding:"10px 12px",verticalAlign:"middle"};
-      const thStyle={padding:"12px 12px",textAlign:"left",fontSize:11,whiteSpace:"nowrap"};
-      return(
-        <div style={{background:"var(--card)",border:"1px solid var(--border)",borderRadius:16,overflow:"hidden",display:"flex",flexDirection:"column"}}>
-          <div style={{overflowX:"auto"}}>
-          <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"fixed"}}>
-            <colgroup>
-              <col style={{width:"22%"}}/>
-              <col style={{width:"13%"}}/>
-              <col style={{width:"18%"}}/>
-              <col style={{width:"15%"}}/>
-              {showSize&&<col style={{width:"10%"}}/>}
-              <col style={{width:"12%"}}/>
-              <col style={{width:"10%"}}/>
-            </colgroup>
-            <thead><tr style={{borderBottom:"1px solid var(--border)",backgroundColor:"var(--surface)",color:"var(--muted)",textTransform:"uppercase",letterSpacing:".04em"}}>
-              <th style={thStyle}>Prospect</th>
-              <th style={thStyle}>Location</th>
-              <th style={thStyle}>Links</th>
-              <th style={thStyle}>Segment</th>
-              {showSize&&<th style={thStyle}>Size</th>}
-              <th style={thStyle}>Status</th>
-              <th style={{...thStyle,textAlign:"right"}}>Action</th>
-            </tr></thead>
-            <tbody>
-            {page.map((ld,i)=>{
-              const seg=segments[ld.segment]||segments.general||{label:"Other",color:"#6366F1",icon:"📋"};
-              const szInfo=SIZE_TIERS&&SIZE_TIERS[ld.size]?SIZE_TIERS[ld.size]:{label:"SME",color:"#10B981",icon:"🏪"};
+  const updateLead=(id,field,val)=>{
+    setLeads(prev=>prev.map(l=>l.id===id?{...l,[field]:val}:l));
+  };
+
+  const filtered=useMemo(()=>{
+    let list=[...leads];
+    if(filterSeg!=="all")list=list.filter(l=>l.segment===filterSeg);
+    if(filterSize!=="all")list=list.filter(l=>(l.size||l.sz||"sme")===filterSize);
+    if(filterStage!=="all")list=list.filter(l=>(l.pipeline||"not_contacted")===filterStage);
+    if(filterOverdue)list=list.filter(l=>isOverdue(l));
+    if(search)list=list.filter(l=>`${l.name} ${l.company} ${l.title}`.toLowerCase().includes(search.toLowerCase()));
+    if(sortBy==="score")list.sort((a,b)=>calcScore(b)-calcScore(a));
+    else if(sortBy==="overdue")list.sort((a,b)=>(isOverdue(b)?1:0)-(isOverdue(a)?1:0));
+    else if(sortBy==="company")list.sort((a,b)=>(a.company||"").localeCompare(b.company||""));
+    return list;
+  },[leads,filterSeg,filterSize,filterStage,filterOverdue,search,sortBy]);
+
+  const totalPages=Math.ceil(filtered.length/PER_PAGE);
+  const page_leads=filtered.slice((page-1)*PER_PAGE,page*PER_PAGE);
+  const overdue_count=leads.filter(l=>isOverdue(l)).length;
+
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12,marginBottom:20}}>
+        <div>
+          <div className="page-title">🎯 WAI Prospect Pipeline</div>
+          <div className="page-sub">{leads.length.toLocaleString()} prospects · {filtered.length} shown{overdue_count>0&&<span style={{color:"var(--red)",fontWeight:700}}> · {overdue_count} overdue 🚨</span>}</div>
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <input className="input" placeholder="Search..." value={search} onChange={e=>{setSearch(e.target.value);setPage(1)}} style={{width:160,padding:"8px 12px",fontSize:13}}/>
+          <select className="select" value={filterSeg} onChange={e=>{setFilterSeg(e.target.value);setPage(1)}}>
+            <option value="all">All Segments</option>
+            {Object.entries(CLIENT_SEGMENTS).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}
+          </select>
+          <select className="select" value={filterSize} onChange={e=>{setFilterSize(e.target.value);setPage(1)}}>
+            <option value="all">All Sizes</option>
+            {Object.entries(SIZE_TIERS).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}
+          </select>
+          <select className="select" value={filterStage} onChange={e=>{setFilterStage(e.target.value);setPage(1)}}>
+            <option value="all">All Stages</option>
+            {Object.entries(PIPELINE_STAGES).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}
+          </select>
+          <select className="select" value={sortBy} onChange={e=>setSortBy(e.target.value)}>
+            <option value="score">Sort: Score ↓</option>
+            <option value="overdue">Sort: Overdue First</option>
+            <option value="company">Sort: Company A-Z</option>
+          </select>
+          <button className="btn btn-secondary btn-sm" onClick={()=>setFilterOverdue(f=>!f)} style={{borderColor:filterOverdue?"var(--red)":"var(--border)",color:filterOverdue?"var(--red)":"var(--text)",background:filterOverdue?"rgba(239,68,68,.1)":"transparent"}}>
+            🚨 Overdue Only
+          </button>
+        </div>
+      </div>
+      <div className="card" style={{padding:0,overflow:"hidden"}}>
+        <div style={{overflowX:"auto"}}>
+        <table className="table">
+          <colgroup>
+            <col style={{width:"18%"}}/><col style={{width:"12%"}}/><col style={{width:"14%"}}/><col style={{width:"7%"}}/><col style={{width:"7%"}}/><col style={{width:"8%"}}/><col style={{width:"8%"}}/><col style={{width:"8%"}}/><col style={{width:"8%"}}/><col style={{width:"10%"}}/>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Prospect</th><th>Links</th><th>Pipeline Stage</th><th>Score</th><th>Size</th><th>Segment</th><th>Seq Day</th><th>Follow-Up</th><th>Overdue</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {page_leads.map((ld)=>{
+              const score=calcScore(ld);
+              const seg=CLIENT_SEGMENTS[ld.segment]||CLIENT_SEGMENTS.general;
+              const sz=SIZE_TIERS[ld.size||ld.sz||"sme"]||SIZE_TIERS.sme;
+              const days=daysSince(ld.seqStartDate);
+              const nf=nextFollowUp(ld);
+              const od=isOverdue(ld)&&(ld.pipeline||"not_contacted")!=="closed"&&(ld.pipeline||"not_contacted")!=="not_interested";
               return(
-              <tr key={ld.id||i} style={{borderBottom:"1px solid var(--border)",transition:"background .2s"}} onMouseEnter={e=>e.currentTarget.style.background="var(--surface)"} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-                {/* Prospect */}
-                <td style={tdStyle}>
-                  <div style={{fontWeight:700,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ld.name}</div>
-                  <div style={{color:"var(--muted)",fontSize:11,marginTop:2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ld.title}</div>
-                  <div style={{color:"var(--muted)",fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}><strong>{ld.company}</strong></div>
-                </td>
-                {/* Location */}
-                <td style={tdStyle}><div style={{color:"var(--muted)",fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>📍 {ld.location||"US"}</div></td>
-                {/* Links — Website + LinkedIn + Email stacked */}
-                <td style={tdStyle}>
-                  <div style={{display:"flex",flexDirection:"column",gap:3}}>
-                    <EditField value={ld.website} placeholder="Website" type="url" onSave={v=>onUpdateField(ld.id,"website",v)}/>
-                    <EditField value={ld.linkedin} placeholder="LinkedIn" type="url" onSave={v=>onUpdateField(ld.id,"linkedin",v)}/>
-                    <EditField value={ld.email} placeholder="Email" type="email" onSave={v=>onUpdateField(ld.id,"email",v)}/>
-                  </div>
-                </td>
-                {/* Segment */}
-                <td style={tdStyle}><div className="status-badge" style={{background:seg.color+"15",color:seg.color,fontSize:9,padding:"3px 8px",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%",display:"block"}}>{seg.icon} {seg.label}</div></td>
-                {/* Size (clients only) */}
-                {showSize&&<td style={tdStyle}><div className="status-badge" style={{background:szInfo.color+"15",color:szInfo.color,fontSize:9,padding:"3px 8px"}}>{szInfo.icon} {szInfo.label}</div></td>}
-                {/* Status */}
-                <td style={tdStyle}>
-                  <select value={ld.status} onChange={e=>onUpdateStatus(ld.id,e.target.value)} style={{padding:"4px 6px",background:ld.status==="New"?"var(--surface)":ld.status==="Contacted"?"rgba(16,185,129,.1)":ld.status==="Converted"?"rgba(245,158,11,.1)":"rgba(59,130,246,.1)",color:ld.status==="New"?"var(--muted)":ld.status==="Contacted"?"#10B981":ld.status==="Converted"?"#F59E0B":"#3B82F6",border:"1px solid var(--border)",borderRadius:6,outline:"none",fontSize:11,fontWeight:700,cursor:"pointer",width:"100%"}}>
-                    <option value="New">New</option>
-                    <option value="Contacted">Contacted ✓</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Converted">Converted 💰</option>
-                    <option value="Rejected">Rejected</option>
-                  </select>
-                </td>
-                {/* Action */}
-                <td style={{...tdStyle,textAlign:"right"}}>
-                  <button className="btn-primary" style={{padding:"6px 10px",fontSize:11,whiteSpace:"nowrap"}} onClick={()=>onSelectLead(ld)}>Scripts →</button>
-                </td>
-              </tr>);
+                <tr key={ld.id} className={od?"overdue":""}>
+                  <td>
+                    <div style={{fontWeight:700,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ld.name||"—"}</div>
+                    <div style={{color:"var(--muted)",fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{ld.title}</div>
+                    <div style={{color:"var(--muted)",fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}><strong style={{color:"var(--text)"}}>{ld.company}</strong></div>
+                  </td>
+                  <td>
+                    <div style={{display:"flex",flexDirection:"column",gap:2}}>
+                      <EditField value={ld.website} placeholder="Website" type="url" onSave={v=>updateLead(ld.id,"website",v)}/>
+                      <EditField value={ld.linkedin} placeholder="LinkedIn" type="url" onSave={v=>updateLead(ld.id,"linkedin",v)}/>
+                      <EditField value={ld.email} placeholder="Email" type="email" onSave={v=>updateLead(ld.id,"email",v)}/>
+                    </div>
+                  </td>
+                  <td><PipelineSelect value={ld.pipeline||"not_contacted"} onChange={v=>updateLead(ld.id,"pipeline",v)}/></td>
+                  <td>
+                    <div style={{fontWeight:800,fontSize:16,color:score>=5?"var(--green)":score>=2?"var(--amber)":"var(--muted)"}}>{score}</div>
+                    <div className="score-bar"><div className="score-fill" style={{width:`${Math.min(score/10*100,100)}%`}}/></div>
+                  </td>
+                  <td><span className="tag" style={{background:`${sz.color}15`,color:sz.color}}>{sz.icon} {sz.label.split(" ")[0]}</span></td>
+                  <td><span className="tag" style={{background:`${seg.color}15`,color:seg.color,fontSize:9}}>{seg.icon} {seg.label.split(" /")[0]}</span></td>
+                  <td>
+                    {ld.seqStartDate?
+                      <span style={{fontSize:12,fontWeight:700,color:"var(--accent2)"}}>Day {days}</span>:
+                      <button className="btn btn-secondary btn-sm" onClick={()=>updateLead(ld.id,"seqStartDate",new Date().toISOString().slice(0,10))} style={{fontSize:10,padding:"3px 7px"}}>▶ Start</button>
+                    }
+                  </td>
+                  <td>
+                    {nf?<span style={{fontSize:11,color:od?"var(--red)":"var(--muted)",fontWeight:od?700:400}}>Day {nf}</span>:
+                      ld.seqStartDate?<span style={{fontSize:11,color:"var(--green)"}}>Complete</span>:<span style={{color:"var(--muted)",fontSize:11}}>—</span>}
+                  </td>
+                  <td>{od?<span className="badge" style={{background:"rgba(239,68,68,.1)",color:"var(--red)"}}>🚨 Overdue</span>:<span style={{color:"var(--muted)",fontSize:11}}>—</span>}</td>
+                  <td>
+                    <div style={{display:"flex",gap:4"}}>
+                      <button className="btn btn-primary btn-sm" onClick={()=>setActiveLead(ld)}>Scripts</button>
+                    </div>
+                  </td>
+                </tr>
+              );
             })}
-            </tbody>
-          </table>
-          </div>
-          {/* Mobile cards */}
-          <div className="mobile-cards">{page.map((ld,i)=>{const seg=segments[ld.segment]||segments.general||{label:"Other",color:"#6366F1",icon:"📋"};return(
-            <div key={ld.id||i} className="mobile-card">
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                <div className="status-badge" style={{background:seg.color+"15",color:seg.color,fontSize:10}}>{seg.icon} {seg.label}</div>
-                <select value={ld.status} onChange={e=>onUpdateStatus(ld.id,e.target.value)} style={{padding:"4px 8px",background:"var(--card)",color:"var(--muted)",border:"1px solid var(--border)",borderRadius:6,fontSize:11,fontWeight:700,cursor:"pointer"}}>
-                  <option value="New">New</option><option value="Contacted">Contacted ✓</option><option value="In Progress">In Progress</option><option value="Converted">Converted 💰</option><option value="Rejected">Rejected</option>
-                </select>
-              </div>
-              <div style={{fontWeight:800,fontSize:16,marginBottom:2}}>{ld.name}</div>
-              <div style={{color:"var(--muted)",fontSize:13,marginBottom:8}}>{ld.title} @ <strong>{ld.company}</strong></div>
-              <div style={{display:"flex",flexDirection:"column",gap:4,marginBottom:12}}>
-                <EditField value={ld.website} placeholder="Website" type="url" onSave={v=>onUpdateField(ld.id,"website",v)}/>
-                <EditField value={ld.linkedin} placeholder="LinkedIn" type="url" onSave={v=>onUpdateField(ld.id,"linkedin",v)}/>
-                <EditField value={ld.email} placeholder="Email" type="email" onSave={v=>onUpdateField(ld.id,"email",v)}/>
-              </div>
-              <button className="btn-primary" style={{width:"100%",padding:"10px",fontSize:13}} onClick={()=>{onSelectLead(ld);window.scrollTo(0,0)}}>Write Scripts</button>
-            </div>)})}</div>
-          <div className="pagination-bar">
-            <div style={{color:"var(--muted)",fontSize:13}}>Showing <strong style={{color:"var(--text)"}}>{start+1}</strong>–<strong style={{color:"var(--text)"}}>{Math.min(start+perPage,leads.length)}</strong> of <strong style={{color:"var(--text)"}}>{leads.length.toLocaleString()}</strong></div>
-            <div><button className="btn-secondary" style={{padding:"6px 14px"}} disabled={currentPage===1} onClick={()=>setCurrentPage(p=>p-1)}>← Prev</button><span style={{fontSize:13,color:"var(--text)",fontWeight:700,padding:"0 10px"}}>{currentPage}/{totalPages||1}</span><button className="btn-secondary" style={{padding:"6px 14px"}} disabled={currentPage>=totalPages} onClick={()=>setCurrentPage(p=>p+1)}>Next →</button></div>
+          </tbody>
+        </table>
+        </div>
+        <div style={{padding:"12px 20px",borderTop:"1px solid var(--border)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{color:"var(--muted)",fontSize:13}}>Showing <strong style={{color:"var(--text)"}}>{(page-1)*PER_PAGE+1}</strong>–<strong style={{color:"var(--text)"}}>{Math.min(page*PER_PAGE,filtered.length)}</strong> of <strong style={{color:"var(--text)"}}>{filtered.length.toLocaleString()}</strong></div>
+          <div style={{display:"flex",gap:8,alignItems:"center"}}>
+            <button className="btn btn-secondary btn-sm" disabled={page===1} onClick={()=>setPage(p=>p-1)}>← Prev</button>
+            <span style={{fontSize:13,fontWeight:700}}>{page}/{totalPages||1}</span>
+            <button className="btn btn-secondary btn-sm" disabled={page>=totalPages} onClick={()=>setPage(p=>p+1)}>Next →</button>
           </div>
         </div>
-      );
-    }
+      </div>
+      {activeLead&&<OutreachPanel lead={activeLead} onClose={()=>setActiveLead(null)}/>}
+    </div>
+  );
+}
 
-    /* ═══ STORAGE HELPERS ═══ */
-    function saveData(key,data){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){console.warn("Storage full",e)}}
-    function loadData(key){try{const d=localStorage.getItem(key);return d?JSON.parse(d):null}catch(e){return null}}
+/* ═══════════════════════════════════════════
+   BRAND PARTNER TRACKER
+═══════════════════════════════════════════ */
+function PartnerTracker({partners,setPartners}){
+  const[filter,setFilter]=useState("all");
+  const[search,setSearch]=useState("");
 
-    /* ═══ LOAD EMBEDDED PARTNERS ═══ */
-    function loadEmbeddedPartners(){
-      if(typeof EMBEDDED_PARTNERS==="undefined")return[];
-      return EMBEDDED_PARTNERS.map((p,i)=>({id:p.id||`bp-${i}`,name:p.n,title:p.t,company:p.c,location:p.l,website:p.w||"",linkedin:p.li||"",email:p.e||"",segment:p.seg,status:p.s||"New",signal:p.sig||"",reason:p.r||""}));
-    }
+  const updatePartner=(id,field,val)=>{
+    setPartners(prev=>prev.map(p=>p.id===id?{...p,[field]:val}:p));
+  };
 
-    /* ═══ MAIN APP ═══ */
-    function App() {
-      const [view,setView]=useState("clients");
-      const [clientLeads,setClientLeads]=useState([]);
-      const [partnerLeads,setPartnerLeads]=useState([]);
-      const [filteredClients,setFilteredClients]=useState([]);
-      const [filteredPartners,setFilteredPartners]=useState([]);
-      const [filterSeg,setFilterSeg]=useState("all");
-      const [filterSize,setFilterSize]=useState("all");
-      const [activeLead,setActiveLead]=useState(null);
-      const [activeTrack,setActiveTrack]=useState("clients");
-      const [clientPage,setClientPage]=useState(1);
-      const [partnerPage,setPartnerPage]=useState(1);
-      const [loading,setLoading]=useState(true);
+  const filtered=useMemo(()=>{
+    let list=[...partners];
+    if(filter!=="all")list=list.filter(p=>p.seg===filter);
+    if(search)list=list.filter(p=>`${p.n} ${p.c}`.toLowerCase().includes(search.toLowerCase()));
+    return list;
+  },[partners,filter,search]);
 
-      const detectClientSegment=(industry)=>{const i=(industry||"").toLowerCase();if(i.includes("account")||i.includes("tax")||i.includes("advisory")||i.includes("cpa")||i.includes("audit"))return"accounting";if(i.includes("wealth")||i.includes("ria")||i.includes("financial advis")||i.includes("investment advis"))return"wealth";if(i.includes("law")||i.includes("legal")||i.includes("attorney"))return"law";return"general"};
-      const detectPartnerSegment=(category)=>{const c=(category||"").toLowerCase();if(c.includes("creator")||c.includes("youtube")||c.includes("podcast")||c.includes("educator"))return"creator";if(c.includes("media")||c.includes("publication")||c.includes("journal")||c.includes("magazine")||c.includes("news"))return"industry_media";if(c.includes("community")||c.includes("forum")||c.includes("newsletter")||c.includes("conference"))return"community";if(c.includes("technolog")||c.includes("integration")||c.includes("software")||c.includes("platform")||c.includes("vendor"))return"technology";if(c.includes("thought")||c.includes("researcher")||c.includes("professor")||c.includes("vc")||c.includes("investor"))return"thought_leader";return"general"};
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12,marginBottom:20}}>
+        <div>
+          <div className="page-title">🤝 Brand Partner Tracker</div>
+          <div className="page-sub">{partners.length} partners · {filtered.length} shown</div>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <input className="input" placeholder="Search..." value={search} onChange={e=>setSearch(e.target.value)} style={{width:160,padding:"8px 12px",fontSize:13}}/>
+          <select className="select" value={filter} onChange={e=>setFilter(e.target.value)}>
+            <option value="all">All Categories</option>
+            {Object.entries(PARTNER_SEGMENTS).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="card" style={{padding:0,overflow:"hidden"}}>
+        <div style={{overflowX:"auto"}}>
+        <table className="table">
+          <colgroup>
+            <col style={{width:"18%"}}/><col style={{width:"12%"}}/><col style={{width:"12%"}}/><col style={{width:"14%"}}/><col style={{width:"10%"}}/><col style={{width:"10%"}}/><col style={{width:"12%"}}/><col style={{width:"12%"}}/>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Partner</th><th>Links</th><th>Category</th><th>Relationship Stage</th><th>Audience Size</th><th>Collab Type</th><th>Next Action</th><th>Scripts</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((p)=>{
+              const seg=PARTNER_SEGMENTS[p.seg]||PARTNER_SEGMENTS.general;
+              const stage=PARTNER_STAGES[p.partnerStage||"identified"];
+              return(
+                <tr key={p.id}>
+                  <td>
+                    <div style={{fontWeight:700,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.n||"—"}</div>
+                    <div style={{color:"var(--muted)",fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.t}</div>
+                    <div style={{fontWeight:700,fontSize:11,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.c}</div>
+                  </td>
+                  <td>
+                    <div style={{display:"flex",flexDirection:"column",gap:2}}>
+                      <EditField value={p.w} placeholder="Website" type="url" onSave={v=>updatePartner(p.id,"w",v)}/>
+                      <EditField value={p.li} placeholder="LinkedIn" type="url" onSave={v=>updatePartner(p.id,"li",v)}/>
+                      <EditField value={p.e} placeholder="Email" type="email" onSave={v=>updatePartner(p.id,"e",v)}/>
+                    </div>
+                  </td>
+                  <td><span className="tag" style={{background:`${seg.color}15`,color:seg.color,fontSize:9}}>{seg.icon} {seg.label}</span></td>
+                  <td>
+                    <select value={p.partnerStage||"identified"} onChange={e=>updatePartner(p.id,"partnerStage",e.target.value)}
+                      style={{padding:"4px 8px",background:`${stage.color}18`,color:stage.color,border:`1px solid ${stage.color}40`,borderRadius:8,fontSize:11,fontWeight:700,cursor:"pointer",outline:"none"}}>
+                      {Object.entries(PARTNER_STAGES).map(([k,v])=><option key={k} value={k}>{v.icon} {v.label}</option>)}
+                    </select>
+                  </td>
+                  <td>
+                    <EditField value={p.audienceSize} placeholder="e.g. 500K" onSave={v=>updatePartner(p.id,"audienceSize",v)}/>
+                  </td>
+                  <td>
+                    <select value={p.collabType||"referral"} onChange={e=>updatePartner(p.id,"collabType",e.target.value)}
+                      style={{padding:"4px 8px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:8,fontSize:11,cursor:"pointer",outline:"none",color:"var(--text)"}}>
+                      <option value="referral">Referral</option>
+                      <option value="content">Content</option>
+                      <option value="integration">Integration</option>
+                      <option value="co_marketing">Co-Marketing</option>
+                      <option value="design_partner">Design Partner</option>
+                      <option value="speaking">Speaking</option>
+                    </select>
+                  </td>
+                  <td>
+                    <EditField value={p.nextAction} placeholder="Next step..." onSave={v=>updatePartner(p.id,"nextAction",v)}/>
+                  </td>
+                  <td>
+                    <div style={{display:"flex",gap:4,flexDirection:"column"}}>
+                      <CopyBtn text={`Hi ${p.n?p.n.split(" ")[0]:"there"},\n\nI lead Workstream AI — we build personalized AI assistants for accounting, wealth management, and law firms.\n\nGiven ${p.c}'s work in the ${seg.label.toLowerCase()} space, I'd love to explore collaboration — whether that's content, referrals, or a technology integration.\n\nWorth a brief conversation?\n\nTimothy Lopas, Workstream AI`} label="DM"/>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      const parseCSV=(file,isPartner,cb)=>{Papa.parse(file,{header:true,skipEmptyLines:true,complete:function(r){const leads=[];r.data.forEach((row,i)=>{let name=row.Name||row["First Name"]?`${row["First Name"]||""} ${row["Last Name"]||""}`.trim():row.name;if(!name)name="Unknown";const title=row.Title||row.title||row["Job Title"]||"";const company=row.Company||row.company||row["Company Name"]||row.Organization||"";const location=row.Location||row.location||row["Company Location"]||row.Country||"Global";const website=row.Website||row.website||row["Company URL"]||row["Company Url"]||"";const linkedin=row.LinkedIn||row["LinkedIn Url"]||row["LinkedIn URL"]||row["Person Linkedin Url"]||row.linkedin||"";const email=row.Email||row.email||row["Person Email"]||"";const industry=row.Industry||row.industry||row.Category||row.category||"";const segment=isPartner?detectPartnerSegment(industry||row.Category||""):detectClientSegment(industry);const size=row.size||row.Size||row.sz||"sme";leads.push({id:`csv-${Date.now()}-${i}`,name,title,company,location,website,linkedin,email,segment,size,status:row.Status||"New",signal:row["Hiring Signal"]||row.signal||"",reason:row["Reason This Is a Strong Lead"]||row.reason||""})});cb(leads)}})};
+/* ═══════════════════════════════════════════
+   CONTENT LIBRARY
+═══════════════════════════════════════════ */
+const DEFAULT_ASSETS=[
+  {id:"asset-1",name:"Physician Role Sustainability Diagnostic",type:"Lead Magnet",link:"",stage:"Touch 1 — Initial DM",desc:"Free diagnostic — 5 minutes, tells prospect their career sustainability risk level"},
+  {id:"asset-2",name:"First-Pass Quality Diagnostic",type:"Lead Magnet",link:"",stage:"Touch 3 — Follow Up",desc:"Maps where rework cycles cost the most time for accounting/law/wealth firms"},
+  {id:"asset-3",name:"Calendly Booking Link",type:"Booking Link",link:"https://calendly.com/workstream-ai",stage:"Touch 2 — Voice Note CTA",desc:"15-minute executive briefing link — use in voice note follow-up"},
+  {id:"asset-4",name:"WAI Demo Video",type:"Demo",link:"",stage:"Touch 4 — Closing",desc:"Product demo showing personalized AI assistant in action for professional services"},
+  {id:"asset-5",name:"LinkedIn Company Page",type:"Social",link:"https://linkedin.com/company/workstream-ai",stage:"All",desc:"Tim's LinkedIn company page — send prospects here to validate credibility"},
+  {id:"asset-6",name:"Case Study — 40% Delivery Time Reduction",type:"Case Study",link:"",stage:"Touch 2 — Follow Up",desc:"Anonymous firm reduced delivery time 40% in 60 days using WAI assistant"},
+];
 
-      /* ═══ SAVE TO LOCALSTORAGE ON EVERY CHANGE ═══ */
-      useEffect(()=>{if(clientLeads.length>0)saveData("wai_clients",clientLeads)},[clientLeads]);
-      useEffect(()=>{if(partnerLeads.length>0)saveData("wai_partners",partnerLeads)},[partnerLeads]);
+function ContentLibrary(){
+  const[assets,setAssets]=useState(()=>load("wai_assets")||DEFAULT_ASSETS);
+  const[editing,setEditing]=useState(null);
+  const[showAdd,setShowAdd]=useState(false);
+  const[newAsset,setNewAsset]=useState({name:"",type:"Lead Magnet",link:"",stage:"Touch 1",desc:""});
 
-      const handleUpload=(e,isPartner)=>{const file=e.target.files[0];if(!file)return;parseCSV(file,isPartner,(leads)=>{if(isPartner){setPartnerLeads(prev=>{const map=new Map();prev.forEach(l=>map.set((l.company||l.name).toLowerCase(),l));leads.forEach(l=>{const k=(l.company||l.name).toLowerCase();if(!map.has(k))map.set(k,l);else{const existing=map.get(k);map.set(k,{...existing,...l,status:existing.status!=="New"?existing.status:l.status,website:existing.website||l.website,linkedin:existing.linkedin||l.linkedin,email:existing.email||l.email})}});return Array.from(map.values())});setFilterSeg("all")}else{setClientLeads(prev=>{const base=prev.some(l=>!l.id.startsWith('csv-'))?[]:prev;const map=new Map();base.forEach(l=>map.set((l.company||l.name).toLowerCase(),l));leads.forEach(l=>{const k=(l.company||l.name).toLowerCase();if(!map.has(k))map.set(k,l)});return Array.from(map.values())});setFilterSeg("all")}})};
+  useEffect(()=>{save("wai_assets",assets)},[assets]);
 
-      const downloadCSV=(leads,filename)=>{const h=["Name","Title","Company","Location","Email","LinkedIn","Website","Segment","Status","Signal","Reason"];const rows=leads.map(l=>[l.name,l.title,l.company,l.location,l.email,l.linkedin,l.website,l.segment,l.status,l.signal||"",l.reason||""].map(v=>`"${(v||"").replace(/"/g,'""')}"`).join(","));const csv=[h.join(","),...rows].join("\n");const blob=new Blob([csv],{type:"text/csv"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;a.click()};
+  const addAsset=()=>{
+    if(!newAsset.name)return;
+    setAssets(prev=>[...prev,{...newAsset,id:`asset-${Date.now()}`}]);
+    setNewAsset({name:"",type:"Lead Magnet",link:"",stage:"Touch 1",desc:""});
+    setShowAdd(false);
+  };
 
-      const updateStatus=(setLeads,id,status)=>{setLeads(prev=>prev.map(l=>l.id===id?{...l,status}:l))};
-      const updateField=(setLeads,id,field,value)=>{setLeads(prev=>prev.map(l=>l.id===id?{...l,[field]:value}:l))};
+  const deleteAsset=(id)=>setAssets(prev=>prev.filter(a=>a.id!==id));
 
-      const clearData=(key,setLeads)=>{if(confirm("Clear all data? This cannot be undone.")){localStorage.removeItem(key);setLeads([])}};
-
-      /* ═══ INITIAL LOAD ═══ */
-      useEffect(()=>{
-        // Load clients: localStorage first, then CSV fallback, then mock
-        const savedClients=loadData("wai_clients");
-        if(savedClients&&savedClients.length>0){
-          // Merge website URLs from embedded data into saved leads (in case they were added after initial save)
-          let merged=savedClients.map(l=>({...l,size:l.size||l.sz||"sme"}));
-          if(typeof EMBEDDED_CLIENTS!=="undefined"&&EMBEDDED_CLIENTS.length>0){
-            const urlMap=new Map();
-            EMBEDDED_CLIENTS.forEach(p=>{if(p.w)urlMap.set((p.c||"").toLowerCase().trim(),p.w)});
-            merged=merged.map(l=>{
-              const key=(l.company||"").toLowerCase().trim();
-              return(!l.website&&urlMap.has(key))?{...l,website:urlMap.get(key)}:l;
-            });
-          }
-          setClientLeads(merged);setLoading(false);
-        }
-        else{fetch('wai_dream_100.csv').then(r=>{if(!r.ok)throw new Error();return r.text()}).then(t=>{const file=new File([t],"leads.csv",{type:"text/csv"});parseCSV(file,false,(leads)=>{setClientLeads(leads);setLoading(false)})}).catch(()=>{setClientLeads(generateMockClients());setLoading(false)})}
-
-        // Load clients from embedded data if no localStorage
-        if(!savedClients||savedClients.length===0){
-          if(typeof EMBEDDED_CLIENTS!=="undefined"&&EMBEDDED_CLIENTS.length>0){
-            const embedded=EMBEDDED_CLIENTS.map((p,i)=>({id:p.id||`wai-${i}`,name:p.n,title:p.t,company:p.c,location:p.l,website:p.w||"",linkedin:p.li||"",email:p.e||"",segment:p.seg,size:p.sz||"sme",status:p.s||"New",signal:p.sig||"",reason:p.r||""}));
-            setClientLeads(embedded);saveData("wai_clients",embedded);setLoading(false);
-          }
-        }
-
-        // Load partners: localStorage first, then embedded data
-        const savedPartners=loadData("wai_partners");
-        if(savedPartners&&savedPartners.length>0){setPartnerLeads(savedPartners)}
-        else{const embedded=loadEmbeddedPartners();if(embedded.length>0){setPartnerLeads(embedded);saveData("wai_partners",embedded)}}
-      },[]);
-
-      useEffect(()=>{
-        const leads=view==="clients"?clientLeads:partnerLeads;
-        let filtered=leads;
-        if(view==="clients"){
-          if(filterSeg!=="all")filtered=filtered.filter(l=>l.segment===filterSeg);
-          if(filterSize!=="all")filtered=filtered.filter(l=>(l.size||l.sz||"sme")===filterSize);
-          setFilteredClients(filtered);
-        } else {
-          if(filterSeg!=="all")filtered=filtered.filter(l=>l.segment===filterSeg);
-          setFilteredPartners(filtered);
-        }
-      },[filterSeg,filterSize,clientLeads,partnerLeads,view]);
-
-      useEffect(()=>{setFilterSeg("all");if(view==="clients"||view==="partners")setActiveLead(null)},[view]);
-
-      if(loading)return<div style={{height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--bg)"}}><div style={{textAlign:"center"}}><div style={{fontSize:48,marginBottom:16}}>🚀</div><h2 style={{margin:"0 0 8px"}}>Initializing Pipeline</h2><p style={{color:"var(--muted)"}}>Loading leads...</p></div></div>;
-
-      const currentLeads=view==="clients"?filteredClients:filteredPartners;
-      const currentSegs=view==="clients"?CLIENT_SEGMENTS:PARTNER_SEGMENTS;
-      const isOutreach=view==="client-outreach"||view==="partner-outreach";
-
-      return(
-        <div className="app-container">
-          <div className="sidebar">
-            <div className="sidebar-header">
-              <div style={{background:view.includes("partner")?"var(--gradient2)":"var(--gradient)",width:40,height:40,borderRadius:12,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:20,marginBottom:16}}>A</div>
-              <div style={{fontSize:18,fontWeight:800}}>Workstream AI</div>
-              <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".1em"}}>Outreach Command Center v1</div>
-            </div>
-            <div className="sidebar-nav">
-              <div className="nav-item" onClick={()=>setView("clients")} style={{background:view==="clients"?"var(--card)":"transparent",color:view==="clients"?"var(--text)":"var(--muted)",fontWeight:view==="clients"?700:500}}>
-                <span style={{fontSize:18}}>📁</span> WAI Prospects <span style={{marginLeft:"auto",fontSize:11,background:"var(--border)",padding:"2px 8px",borderRadius:100}}>{clientLeads.length}</span>
-              </div>
-              <div className="nav-item" onClick={()=>setView("client-outreach")} style={{background:view==="client-outreach"?"var(--card)":"transparent",color:view==="client-outreach"?"var(--text)":"var(--muted)",fontWeight:view==="client-outreach"?700:500}}>
-                <span style={{fontSize:18}}>⚡</span> Prospect Outreach
-              </div>
-              <div className="nav-divider"/>
-              <div className="nav-item" onClick={()=>setView("partners")} style={{background:view==="partners"?"var(--card)":"transparent",color:view==="partners"?"var(--text)":"var(--muted)",fontWeight:view==="partners"?700:500}}>
-                <span style={{fontSize:18}}>🌍</span> Brand Partners <span style={{marginLeft:"auto",fontSize:11,background:"var(--border)",padding:"2px 8px",borderRadius:100}}>{partnerLeads.length}</span>
-              </div>
-              <div className="nav-item" onClick={()=>setView("partner-outreach")} style={{background:view==="partner-outreach"?"var(--card)":"transparent",color:view==="partner-outreach"?"var(--text)":"var(--muted)",fontWeight:view==="partner-outreach"?700:500}}>
-                <span style={{fontSize:18}}>🤝</span> Partner Outreach
-              </div>
-            </div>
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+        <div>
+          <div className="page-title">📚 Content & Lead Magnet Library</div>
+          <div className="page-sub">All active assets ready for the Air Assistant to pull instantly during outreach</div>
+        </div>
+        <button className="btn btn-primary btn-sm" onClick={()=>setShowAdd(s=>!s)}>+ Add Asset</button>
+      </div>
+      {showAdd&&(
+        <div className="card" style={{marginBottom:16}}>
+          <div style={{fontWeight:700,fontSize:14,marginBottom:12}}>New Asset</div>
+          <div className="grid-2" style={{marginBottom:12}}>
+            <input className="input" placeholder="Asset name" value={newAsset.name} onChange={e=>setNewAsset(p=>({...p,name:e.target.value}))}/>
+            <select className="input" value={newAsset.type} onChange={e=>setNewAsset(p=>({...p,type:e.target.value}))}>
+              {["Lead Magnet","Case Study","Demo","Booking Link","Social","Video","Template","Report","Other"].map(t=><option key={t}>{t}</option>)}
+            </select>
+            <input className="input" placeholder="URL / Link" value={newAsset.link} onChange={e=>setNewAsset(p=>({...p,link:e.target.value}))}/>
+            <select className="input" value={newAsset.stage} onChange={e=>setNewAsset(p=>({...p,stage:e.target.value}))}>
+              {["Touch 1","Touch 2","Touch 3","Touch 4","All","Voice Note","Call Booked"].map(s=><option key={s}>{s}</option>)}
+            </select>
           </div>
-
-          <div className="content-area">
-            {/* ═══ CLIENT DATABASE ═══ */}
-            {view==="clients"&&(
-              <div className="animate-up">
-                <div className="page-header">
-                  <div><h1 style={{fontSize:36,margin:"0 0 8px"}}>Dream 100 — WAI Prospects</h1><p style={{color:"var(--muted)",margin:0,fontSize:16}}>Accounting, Wealth Management & Law Firm prospects <span style={{fontSize:11,color:"#10B981"}}>✓ Auto-saved</span></p></div>
-                  <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-                    <label className="btn-secondary" style={{padding:"12px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,borderColor:"var(--accent)",color:"var(--accent)"}}><input type="file" accept=".csv" style={{display:"none"}} onChange={e=>handleUpload(e,false)}/><span>📥 Upload CSV</span></label>
-                    <button onClick={()=>downloadCSV(filteredClients,`aia_clients_${new Date().toISOString().slice(0,10)}.csv`)} className="btn-secondary" style={{padding:"12px 20px",borderColor:"#10B981",color:"#10B981"}}>📤 Download</button>
-                    <select value={filterSeg} onChange={e=>{setFilterSeg(e.target.value);setClientPage(1)}} style={{padding:"12px 16px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,color:"var(--text)",outline:"none",fontSize:14}}><option value="all">All Segments ({clientLeads.length})</option>{Object.entries(CLIENT_SEGMENTS).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}</select>
-                    <select value={filterSize} onChange={e=>{setFilterSize(e.target.value);setClientPage(1)}} style={{padding:"12px 16px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,color:"var(--text)",outline:"none",fontSize:14}}><option value="all">All Sizes</option>{Object.entries(SIZE_TIERS).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}</select>
-                  </div>
-                </div>
-                <LeadTable leads={filteredClients} segments={CLIENT_SEGMENTS} showSize={true} onSelectLead={ld=>{setActiveLead(ld);setActiveTrack("clients");setView("client-outreach")}} onUpdateStatus={(id,st)=>updateStatus(setClientLeads,id,st)} onUpdateField={(id,f,v)=>updateField(setClientLeads,id,f,v)} currentPage={clientPage} setCurrentPage={setClientPage}/>
-              </div>
-            )}
-
-            {/* ═══ PARTNER DATABASE ═══ */}
-            {view==="partners"&&(
-              <div className="animate-up">
-                <div className="page-header">
-                  <div><h1 style={{fontSize:36,margin:"0 0 8px"}}>Brand Partners — Workstream AI</h1><p style={{color:"var(--muted)",margin:0,fontSize:16}}>Tech creators, industry media, communities, technology integrations & thought leaders <span style={{fontSize:11,color:"#10B981"}}>✓ Auto-saved</span></p></div>
-                  <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap",justifyContent:"flex-end"}}>
-                    <label className="btn-secondary" style={{padding:"12px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,borderColor:"#F59E0B",color:"#F59E0B"}}><input type="file" accept=".csv" style={{display:"none"}} onChange={e=>handleUpload(e,true)}/><span>📥 Upload Partners CSV</span></label>
-                    <button onClick={()=>downloadCSV(filteredPartners,`aia_partners_${new Date().toISOString().slice(0,10)}.csv`)} className="btn-secondary" style={{padding:"12px 20px",borderColor:"#10B981",color:"#10B981"}}>📤 Download</button>
-                    <select value={filterSeg} onChange={e=>{setFilterSeg(e.target.value);setPartnerPage(1)}} style={{padding:"12px 16px",background:"var(--card)",border:"1px solid var(--border)",borderRadius:12,color:"var(--text)",outline:"none",fontSize:14}}><option value="all">All ({partnerLeads.length})</option>{Object.entries(PARTNER_SEGMENTS).map(([k,s])=><option key={k} value={k}>{s.icon} {s.label}</option>)}</select>
-                  </div>
-                </div>
-                {partnerLeads.length===0?(
-                  <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:16,color:"var(--muted)",background:"var(--card)"}}><div style={{fontSize:48,marginBottom:16}}>🌍</div><h3 style={{margin:"0 0 8px"}}>No Brand Partners Loaded</h3><p style={{margin:0,maxWidth:400,marginLeft:"auto",marginRight:"auto"}}>Upload a CSV with your Brand Partners Dream 100 list (African banks, hotels, airlines, construction, tourism ministries).</p></div>
-                ):(<LeadTable leads={filteredPartners} segments={PARTNER_SEGMENTS} showSize={false} onSelectLead={ld=>{setActiveLead(ld);setActiveTrack("partners");setView("partner-outreach")}} onUpdateStatus={(id,st)=>updateStatus(setPartnerLeads,id,st)} onUpdateField={(id,f,v)=>updateField(setPartnerLeads,id,f,v)} currentPage={partnerPage} setCurrentPage={setPartnerPage}/>)}
-              </div>
-            )}
-
-            {/* ═══ CLIENT OUTREACH ═══ */}
-            {view==="client-outreach"&&(
-              <div className="animate-up">
-                <h1 style={{fontSize:32,margin:"0 0 8px"}}>Prospect Outreach Engine</h1>
-                <p style={{color:"var(--muted)",margin:"0 0 32px",fontSize:16}}>LinkedIn DM + Voice Note + 4-Step Nurture for WAI prospects</p>
-                {activeLead?<OutreachPanel lead={activeLead} track="clients" onClear={()=>{setActiveLead(null);setActiveTrack(null)}}/>:(
-                  <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:16,color:"var(--muted)",background:"var(--card)"}}><div style={{fontSize:48,marginBottom:16}}>🎯</div><h3 style={{margin:"0 0 8px"}}>No Client Selected</h3><p style={{margin:0,maxWidth:400,marginLeft:"auto",marginRight:"auto"}}>Go to WAI Prospects and click "Write Scripts" on any lead.</p><button className="btn-primary" style={{marginTop:24,padding:"12px 24px"}} onClick={()=>setView("clients")}>Browse Clients</button></div>
-                )}
-              </div>
-            )}
-
-            {/* ═══ PARTNER OUTREACH ═══ */}
-            {view==="partner-outreach"&&(
-              <div className="animate-up">
-                <h1 style={{fontSize:32,margin:"0 0 8px"}}>Partner Outreach Engine</h1>
-                <p style={{color:"var(--muted)",margin:"0 0 32px",fontSize:16}}>LinkedIn DM + Voice Note + 4-Step Partnership Nurture</p>
-                {activeLead?<OutreachPanel lead={activeLead} track="partners" onClear={()=>{setActiveLead(null);setActiveTrack(null)}}/>:(
-                  <div style={{textAlign:"center",padding:"60px 20px",border:"1px dashed var(--border)",borderRadius:16,color:"var(--muted)",background:"var(--card)"}}><div style={{fontSize:48,marginBottom:16}}>🌍</div><h3 style={{margin:"0 0 8px"}}>No Partner Selected</h3><p style={{margin:0,maxWidth:400,marginLeft:"auto",marginRight:"auto"}}>Go to Brand Partners and click "Write Scripts" on any partner.</p><button className="btn-primary" style={{marginTop:24,padding:"12px 24px"}} onClick={()=>setView("partners")}>Browse Partners</button></div>
-                )}
-              </div>
-            )}
+          <textarea className="input" placeholder="Description / notes for AA" value={newAsset.desc} onChange={e=>setNewAsset(p=>({...p,desc:e.target.value}))} style={{height:60,resize:"vertical",marginBottom:12}}/>
+          <div style={{display:"flex",gap:8}}>
+            <button className="btn btn-primary btn-sm" onClick={addAsset}>Save Asset</button>
+            <button className="btn btn-secondary btn-sm" onClick={()=>setShowAdd(false)}>Cancel</button>
           </div>
         </div>
-      );
-    }
+      )}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:16}}>
+        {assets.map(a=>(
+          <div key={a.id} className="card" style={{position:"relative"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:14,marginBottom:4}}>{a.name}</div>
+                <div style={{display:"flex",gap:6}}>
+                  <span className="tag" style={{background:"rgba(124,58,237,.15)",color:"var(--accent)"}}>{a.type}</span>
+                  <span className="tag" style={{background:"rgba(6,182,212,.15)",color:"var(--accent2)"}}>{a.stage}</span>
+                </div>
+              </div>
+              <button onClick={()=>deleteAsset(a.id)} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:16,padding:"2px 6px"}}>✕</button>
+            </div>
+            <div style={{color:"var(--muted)",fontSize:12,marginBottom:12,lineHeight:1.6}}>{a.desc}</div>
+            <div style={{display:"flex",gap:8}}>
+              {a.link&&<a href={a.link} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm" style={{textDecoration:"none"}}>🔗 Open</a>}
+              {a.link&&<CopyBtn text={a.link} label="Copy Link"/>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
+/* ═══════════════════════════════════════════
+   FOUNDER VOICE REFERENCE
+═══════════════════════════════════════════ */
+function FounderVoice(){
+  const sections=[
+    {title:"🎯 One-Line Positioning",content:"We install personalized AI assistants for professional services firms that learn each professional's preferences and produce first-pass work already tailored to their standards — so partners review instead of rework."},
+    {title:"💡 Core Value Proposition",content:"Generic AI (ChatGPT, Claude) can never write in your voice, understand your personality, or know why you make the decisions you do — unless given that specific context. That gap is what Workstream AI addresses.\n\nAI handles the first pass. Humans handle the final call. We close the gap between zero and one — reducing rework, eliminating repeated mistakes, and freeing professionals to focus on high-value thinking."},
+    {title:"👤 ICP — Who We Serve",content:"Founders, CEOs, Managing Partners, and COOs at:\n• Accounting / Tax / Advisory firms\n• Wealth Management / RIA firms\n• Law Firms\n\nFirm size: 10-500 employees\nRevenue: $500K–$50M\nDeal size: ~$75K avg | Year 1 target: $900K\n\nPrimary pain: Partners reviewing same work repeatedly, catching same mistakes, while staff produces first drafts that don't match partner standards."},
+    {title:"🗣️ Tone of Voice",content:"Professional but direct. Peer-to-peer, never salesy. Specific and outcome-focused. Never use 'partner judgment' — it makes prospects feel threatened.\n\nAlways reframe as: 'An assistant that uses the partner's judgment to filter, flag, and prepare work before it lands on their desk.'"},
+    {title:"💬 Tim's Exact Quote (Use This)",content:"\"It's not about taking things away. It's about assisting you in the things you have to do day to day and getting you a version that is significantly better than what you were originally handed.\" — Timothy Lopas"},
+    {title:"🔐 Security Narrative (Always Include)",content:"• Deploys on YOUR infrastructure (AWS, Azure, or Google Cloud)\n• Open source architecture — IT team sees every line of code\n• You control your own encryption keys\n• No data ever leaves your environment\n\nThis is NOT a SaaS tool. This is an on-premise intelligence system."},
+    {title:"📋 GTM Sequence",content:"Sequential market entry:\n1. Accounting / Tax / Advisory (primary)\n2. Wealth Management / RIA\n3. Law Firms\n\nOutreach sequence:\nStep 1: Initial curiosity message (LinkedIn DM)\nStep 2: Voice note from Tim upon positive response\nStep 3: Demo or replay link sent once they confirm interest"},
+    {title:"❌ What to Never Say",content:"• Never say 'partner judgment' — triggers fear of job loss\n• Never position as 'automating your role'\n• Never lead with features — always lead with the rework problem\n• Never use generic AI comparisons without contrasting with personalization"},
+  ];
+  return(
+    <div>
+      <div className="page-title">📖 Founder Voice & Positioning Reference</div>
+      <div className="page-sub">AA reference guide — ensures every message aligns with Tim's brand without external guidance</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(340px,1fr))",gap:16,marginTop:20}}>
+        {sections.map(s=>(
+          <div key={s.title} className="card">
+            <div style={{fontWeight:800,fontSize:14,marginBottom:10}}>{s.title}</div>
+            <div style={{color:"var(--muted)",fontSize:13,lineHeight:1.8,whiteSpace:"pre-wrap"}}>{s.content}</div>
+            <div style={{marginTop:12}}><CopyBtn text={s.content} label="Copy"/></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   OBJECTION HANDLING
+═══════════════════════════════════════════ */
+const DEFAULT_OBJECTIONS=[
+  {id:"obj-1",objection:"We already use ChatGPT / AI tools",response:"Generic AI is a great starting point, but it can never write in your voice, know your clients, or understand why you make the decisions you do. Our system is personalized to each individual — the more context it has, the more precise the output. It's the difference between a generic assistant and one that's been trained specifically on how you work."},
+  {id:"obj-2",objection:"We're not ready for AI / our team isn't tech-savvy",response:"That's exactly why we built it this way. There's no new software for your team to learn. The AI works in the background — your people keep doing what they're doing, but the first draft they receive is already tailored to partner standards. No disruption, no retraining."},
+  {id:"obj-3",objection:"We have concerns about data security",response:"Completely valid. Unlike SaaS AI tools, we deploy on YOUR infrastructure — AWS, Azure, or Google Cloud, whichever you already use. Open source architecture means your IT team can see every line of code. You control your own encryption keys. No data ever leaves your environment."},
+  {id:"obj-4",objection:"This is too expensive / what's the ROI?",response:"At $75K, you're investing to protect the expertise and time of your partners who typically bill at $300-$500/hour. If we save each partner just 5 hours per week, that's 250+ hours per year per partner — the ROI is immediate. One recovered client relationship or one avoided error typically covers the investment."},
+  {id:"obj-5",objection:"We need to involve IT / legal / leadership first",response:"Of course — and we're designed to make that easy. We can provide a technical architecture document for IT, a data sovereignty overview for legal, and an executive briefing deck for leadership. All tailored to address their specific concerns before any decision is made."},
+  {id:"obj-6",objection:"We tried AI before and it didn't work",response:"Most AI implementations fail because they use generic tools that weren't trained on the firm's specific context. Our system is different by design — we capture each professional's preferences, client history, and decision patterns before going live. The output reflects your standards, not a generic model's best guess."},
+  {id:"obj-7",objection:"Can we start smaller / with a pilot?",response:"Absolutely — that's exactly how most firms start. We offer a 90-day pilot focused on one practice group or service line. You see measurable results before any enterprise commitment. We can structure it so the pilot cost is credited toward the full engagement."},
+  {id:"obj-8",objection:"We don't have time to implement this right now",response:"We handle the implementation. Your team's involvement in the setup phase is typically 2-4 hours total across 4 weeks. After that, the system runs in the background. The only thing your people do differently is receive better first drafts."},
+];
+
+function ObjectionLibrary(){
+  const[objections,setObjections]=useState(()=>load("wai_objections")||DEFAULT_OBJECTIONS);
+  const[showAdd,setShowAdd]=useState(false);
+  const[newObj,setNewObj]=useState({objection:"",response:""});
+  const[search,setSearch]=useState("");
+
+  useEffect(()=>{save("wai_objections",objections)},[objections]);
+
+  const filtered=objections.filter(o=>`${o.objection} ${o.response}`.toLowerCase().includes(search.toLowerCase()));
+
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+        <div>
+          <div className="page-title">🛡️ Objection Handling Library</div>
+          <div className="page-sub">Pre-approved responses — AA can respond immediately without escalating to Tim or EO</div>
+        </div>
+        <div style={{display:"flex",gap:8}}>
+          <input className="input" placeholder="Search objections..." value={search} onChange={e=>setSearch(e.target.value)} style={{width:200,padding:"8px 12px",fontSize:13}}/>
+          <button className="btn btn-primary btn-sm" onClick={()=>setShowAdd(s=>!s)}>+ Add Objection</button>
+        </div>
+      </div>
+      {showAdd&&(
+        <div className="card" style={{marginBottom:16}}>
+          <div style={{fontWeight:700,fontSize:14,marginBottom:12}}>New Objection + Response</div>
+          <textarea className="input" placeholder="The objection..." value={newObj.objection} onChange={e=>setNewObj(p=>({...p,objection:e.target.value}))} style={{height:60,resize:"vertical",marginBottom:10}}/>
+          <textarea className="input" placeholder="Pre-approved response..." value={newObj.response} onChange={e=>setNewObj(p=>({...p,response:e.target.value}))} style={{height:100,resize:"vertical",marginBottom:10}}/>
+          <div style={{display:"flex",gap:8}}>
+            <button className="btn btn-primary btn-sm" onClick={()=>{if(!newObj.objection)return;setObjections(p=>[...p,{...newObj,id:`obj-${Date.now()}`}]);setNewObj({objection:"",response:""});setShowAdd(false)}}>Save</button>
+            <button className="btn btn-secondary btn-sm" onClick={()=>setShowAdd(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+      <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        {filtered.map(o=>(
+          <div key={o.id} className="card">
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+              <div style={{fontWeight:700,fontSize:14,color:"var(--red)"}}>"<em>{o.objection}</em>"</div>
+              <button onClick={()=>setObjections(p=>p.filter(x=>x.id!==o.id))} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:14}}>✕</button>
+            </div>
+            <div style={{background:"var(--surface)",border:"1px solid var(--border)",borderRadius:10,padding:"12px 14px",fontSize:13,color:"var(--muted)",lineHeight:1.7,marginBottom:10}}>{o.response}</div>
+            <CopyBtn text={o.response} label="Copy Response"/>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   MAIN APP
+═══════════════════════════════════════════ */
+function App(){
+  const[user,setUser]=useState(()=>load("wai_user"));
+  const[view,setView]=useState("dashboard");
+  const[leads,setLeads]=useState([]);
+  const[partners,setPartners]=useState([]);
+  const[loading,setLoading]=useState(true);
+
+  // Persist leads and partners
+  useEffect(()=>{if(leads.length>0)save("wai_clients",leads)},[leads]);
+  useEffect(()=>{if(partners.length>0)save("wai_partners",partners)},[partners]);
+
+  // Load on mount
+  useEffect(()=>{
+    // Load clients
+    const saved=load("wai_clients");
+    if(saved&&saved.length>0){
+      // Merge website URLs from embedded data
+      let merged=saved.map(l=>({...l,size:l.size||l.sz||"sme",pipeline:l.pipeline||"not_contacted"}));
+      if(typeof EMBEDDED_CLIENTS!=="undefined"){
+        const urlMap=new Map();
+        EMBEDDED_CLIENTS.forEach(p=>{if(p.w)urlMap.set((p.c||"").toLowerCase().trim(),p.w)});
+        merged=merged.map(l=>{const key=(l.company||"").toLowerCase().trim();return(!l.website&&urlMap.has(key))?{...l,website:urlMap.get(key)}:l});
+      }
+      setLeads(merged);setLoading(false);
+    } else if(typeof EMBEDDED_CLIENTS!=="undefined"&&EMBEDDED_CLIENTS.length>0){
+      const embedded=EMBEDDED_CLIENTS.map((p,i)=>({id:p.id||`wai-${i}`,name:p.n,title:p.t,company:p.c,location:p.l,website:p.w||"",linkedin:p.li||"",email:p.e||"",segment:p.seg,size:p.sz||"sme",status:"New",pipeline:"not_contacted",signal:p.sig||"",reason:p.r||""}));
+      setLeads(embedded);setLoading(false);
+    } else {setLoading(false)}
+
+    // Load partners
+    const savedP=load("wai_partners");
+    if(savedP&&savedP.length>0){setPartners(savedP)}
+    else if(typeof EMBEDDED_PARTNERS!=="undefined"&&EMBEDDED_PARTNERS.length>0){
+      const ep=EMBEDDED_PARTNERS.map((p,i)=>({id:p.id||`bp-${i}`,n:p.n,t:p.t,c:p.c,l:p.l,w:p.w||"",li:p.li||"",e:p.e||"",seg:p.seg,s:"New",sig:p.sig||"",r:p.r||"",partnerStage:"identified",audienceSize:"",collabType:"referral",nextAction:""}));
+      setPartners(ep);save("wai_partners",ep);
+    }
+  },[]);
+
+  const handleAuth=(u)=>{setUser(u);save("wai_user",u)};
+  const handleLogout=()=>{setUser(null);localStorage.removeItem("wai_user")};
+
+  if(!user)return <AuthGate onAuth={handleAuth}/>;
+
+  const overdue_count=leads.filter(l=>isOverdue(l)&&(l.pipeline||"not_contacted")!=="closed"&&(l.pipeline||"not_contacted")!=="not_interested").length;
+
+  const NAV=[
+    {section:"Analytics"},
+    {id:"dashboard",label:"Dashboard",icon:"📊"},
+    {section:"Pipeline"},
+    {id:"prospects",label:"Prospects",icon:"🎯",badge:leads.length,hotBadge:overdue_count},
+    {id:"partners",label:"Brand Partners",icon:"🤝",badge:partners.length},
+    {section:"Resources"},
+    {id:"scripts",label:"Outreach Scripts",icon:"⚡"},
+    {id:"objections",label:"Objection Library",icon:"🛡️"},
+    {id:"content",label:"Content Library",icon:"📚"},
+    {id:"voice",label:"Founder Voice",icon:"📖"},
+  ];
+
+  if(loading)return <div style={{height:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--bg)"}}><div style={{textAlign:"center"}}><div style={{fontSize:48,marginBottom:12}}>🚀</div><h2>Loading WAI OS...</h2></div></div>;
+
+  return(
+    <div className="app">
+      <button className="logout-btn" onClick={handleLogout}>Logout</button>
+      <div className="sidebar">
+        <div className="sidebar-brand">
+          <div className="brand-logo">W</div>
+          <div className="brand-name">Workstream AI</div>
+          <div className="brand-sub">Operating System</div>
+        </div>
+        <div style={{padding:"4px 0 8px"}}>
+          {NAV.map((item,i)=>item.section?
+            <div key={i} className="nav-section">{item.section}</div>:
+            <div key={item.id} className={`nav-item${view===item.id?" active":""}`} onClick={()=>setView(item.id)}>
+              <span style={{fontSize:15}}>{item.icon}</span>
+              <span>{item.label}</span>
+              {item.badge&&<span className="nav-badge">{item.badge}</span>}
+              {item.hotBadge>0&&<span className="nav-badge hot">🚨{item.hotBadge}</span>}
+            </div>
+          )}
+        </div>
+        <div style={{marginTop:"auto",padding:"12px 16px",borderTop:"1px solid var(--border)"}}>
+          <div style={{fontSize:11,color:"var(--muted)"}}>Logged in as</div>
+          <div style={{fontSize:13,fontWeight:700}}>{user.name}</div>
+          <div style={{fontSize:10,color:"var(--accent)",textTransform:"uppercase",letterSpacing:".06em"}}>{user.role}</div>
+        </div>
+      </div>
+      <div className="content">
+        {view==="dashboard"&&<Dashboard leads={leads} partners={partners}/>}
+        {view==="prospects"&&<ProspectDB leads={leads} setLeads={setLeads}/>}
+        {view==="partners"&&<PartnerTracker partners={partners} setPartners={setPartners}/>}
+        {view==="scripts"&&(
+          <div>
+            <div className="page-title">⚡ Outreach Scripts Reference</div>
+            <div className="page-sub">Go to Prospects and click "Scripts" on any lead to generate personalized scripts</div>
+            <div className="card" style={{marginTop:20}}>
+              <div style={{fontWeight:700,fontSize:15,marginBottom:12}}>Quick Reference — WAI 3-Step Sequence</div>
+              {[
+                {step:"Step 1",title:"Initial Curiosity Message (LinkedIn DM)",desc:"Lead with the rework problem. Size-aware: SME gets founder-to-founder, MME gets growth-stage, BME gets executive framing. Never mention pricing. End with a soft 15-minute ask.",color:"var(--blue)"},
+                {step:"Step 2",title:"Voice Note (from Tim upon positive response)",desc:"Tim records a 60-second voice note. Warm, confident, specific to the firm. Mention one thing you noticed about their firm. Use Tim's quote: 'Getting you a version significantly better than what you were originally handed.'",color:"var(--accent)"},
+                {step:"Step 3",title:"Demo or Replay Link (once they confirm interest)",desc:"Send the Calendly link or demo video. Keep the message short — they've already expressed interest. Confirm the time, send a 1-paragraph reminder of what we're showing them.",color:"var(--green)"},
+              ].map(s=>(
+                <div key={s.step} style={{padding:"14px 16px",borderLeft:`3px solid ${s.color}`,background:"var(--surface)",borderRadius:"0 10px 10px 0",marginBottom:10}}>
+                  <div style={{display:"flex",gap:10,alignItems:"center",marginBottom:6}}>
+                    <span className="tag" style={{background:`${s.color}18`,color:s.color}}>{s.step}</span>
+                    <span style={{fontWeight:700,fontSize:14}}>{s.title}</span>
+                  </div>
+                  <div style={{color:"var(--muted)",fontSize:13,lineHeight:1.7}}>{s.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {view==="objections"&&<ObjectionLibrary/>}
+        {view==="content"&&<ContentLibrary/>}
+        {view==="voice"&&<FounderVoice/>}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
 </body>
 </html>
